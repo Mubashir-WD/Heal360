@@ -1316,17 +1316,26 @@ html {
 }
 
 /* Footer logo */
-.footer-brand { display: flex; flex-direction: column; align-items: flex-start; }
+.footer-brand { 
+    display: flex; 
+    flex-direction: column; 
+    align-items: flex-start; 
+}
+
 .footer-logo { 
     height: 56px; 
     width: auto; 
-    max-width: 200px; /* Add max-width for responsive scaling */
+    max-width: 200px;
     display: block; 
-    margin-bottom: 0.5rem; 
+    margin-bottom: 1rem;
+    object-fit: contain;
+    filter: brightness(1.1) contrast(1.1);
+    -webkit-filter: brightness(1.1) contrast(1.1);
 }
+
 @media (max-width: 600px) {
     .footer-logo { 
         height: 44px; 
-        max-width: 160px; /* Responsive max-width for mobile */
+        max-width: 160px;
     }
 }
