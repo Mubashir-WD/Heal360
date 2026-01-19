@@ -146,7 +146,7 @@ nav {
 .blog-hero,
 .contact-hero,
 .login-hero,
-.program-hero,
+.book-hero,
 .privacy-hero,
 .team-hero,
 .hero {
@@ -163,7 +163,7 @@ nav {
 .blog-hero .hero-content,
 .contact-hero .hero-content,
 .login-hero .hero-content,
-.program-hero .hero-content,
+.book-hero .hero-content,
 .privacy-hero .hero-content,
 .team-hero .hero-content {
     max-width: 900px;
@@ -1461,13 +1461,13 @@ footer {
         padding: 2rem 1.5rem;
     }
 
-    /* Program Page Responsive */
-    .program-overview {
-        padding: 3rem 1rem;
+    /* Book Page Responsive */
+    .book-overview {
+        padding: 4rem 1rem;
     }
 
-    .program-overview h2 {
-        font-size: 2rem;
+    .book-overview h2 {
+        font-size: 2.2rem;
     }
 
     .overview-grid {
@@ -1476,7 +1476,7 @@ footer {
     }
 
     .overview-item {
-        padding: 2rem 1.5rem;
+        padding: 1.5rem;
     }
 
     .what-you-get {
@@ -1489,31 +1489,32 @@ footer {
 
     .benefits-grid {
         grid-template-columns: 1fr;
-        gap: 2rem;
+        gap: 1.5rem;
     }
 
     .benefit-category {
-        padding: 2rem 1.5rem;
+        padding: 1.5rem;
     }
 
-    .program-conditions {
-        padding: 3rem 1rem;
+    .book-conditions {
+        padding: 4rem 1rem;
     }
 
-    .program-conditions h2 {
-        font-size: 2rem;
+    .book-conditions h2 {
+        font-size: 2.2rem;
     }
 
     .conditions-grid {
         grid-template-columns: 1fr;
+        gap: 1.2rem;
     }
 
-    .program-duration {
-        padding: 3rem 1rem;
+    .book-duration {
+        padding: 4rem 1rem;
     }
 
-    .program-duration h2 {
-        font-size: 2rem;
+    .book-duration h2 {
+        font-size: 2.2rem;
     }
 
     .duration-options {
@@ -1744,13 +1745,13 @@ html {
     }
 }
 
-/* Program Page Styles */
-.program-overview {
+/* Book Page Styles */
+.book-overview {
     padding: 5rem 2rem;
     background-color: var(--white);
 }
 
-.program-overview h2 {
+.book-overview h2 {
     text-align: center;
     font-size: 2.5rem;
     color: var(--dark-green);
@@ -1758,7 +1759,7 @@ html {
     font-family: 'Playfair Display', serif;
 }
 
-.program-overview>.container>p {
+.book-overview>.container>p {
     text-align: center;
     font-size: 1.2rem;
     color: #666;
@@ -1891,13 +1892,13 @@ html {
     font-size: 1.2rem;
 }
 
-/* Program Conditions Section */
-.program-conditions {
+/* Book Conditions Section */
+.book-conditions {
     padding: 5rem 2rem;
     background-color: var(--white);
 }
 
-.program-conditions h2 {
+.book-conditions h2 {
     text-align: center;
     font-size: 2.5rem;
     color: var(--dark-green);
@@ -1974,21 +1975,21 @@ html {
     font-size: 0.95rem;
 }
 
-/* Program Duration Section */
-.program-duration {
+/* Book Duration Section */
+.book-duration {
     padding: 5rem 2rem;
     background: linear-gradient(135deg, var(--sage-green) 0%, var(--dark-green) 100%);
     color: var(--white);
 }
 
-.program-duration h2 {
+.book-duration h2 {
     text-align: center;
     font-size: 2.5rem;
     margin-bottom: 1.5rem;
     font-family: 'Playfair Display', serif;
 }
 
-.program-duration>.container>p {
+.book-duration>.container>p {
     text-align: center;
     font-size: 1.2rem;
     margin-bottom: 3rem;
