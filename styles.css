@@ -1747,9 +1747,10 @@ html {
 
 /* Book Page Styles */
 .book-overview {
-    padding: 5rem 2rem;
+    padding: 6rem 2rem;
     background-color: var(--white);
 }
+
 
 .book-overview h2 {
     text-align: center;
@@ -1894,9 +1895,10 @@ html {
 
 /* Book Conditions Section */
 .book-conditions {
-    padding: 5rem 2rem;
+    padding: 6rem 2rem;
     background-color: var(--white);
 }
+
 
 .book-conditions h2 {
     text-align: center;
@@ -1977,10 +1979,11 @@ html {
 
 /* Book Duration Section */
 .book-duration {
-    padding: 5rem 2rem;
+    padding: 6rem 2rem;
     background: linear-gradient(135deg, var(--sage-green) 0%, var(--dark-green) 100%);
     color: var(--white);
 }
+
 
 .book-duration h2 {
     text-align: center;
@@ -2142,9 +2145,10 @@ html {
 
 /* Team Values Section */
 .team-values {
-    padding: 5rem 2rem;
+    padding: 6rem 2rem;
     background: linear-gradient(135deg, var(--beige) 0%, var(--soft-pink) 100%);
 }
+
 
 .team-values h2 {
     text-align: center;
@@ -2584,9 +2588,13 @@ html {
 /* Support Team Section */
 .support-team {
     margin-top: 4rem;
-    padding-top: 4rem;
+    padding-top: 6rem;
+    /* Increased top padding */
+    padding-bottom: 6rem;
+    /* Added bottom padding */
     border-top: 2px solid var(--light-gray);
 }
+
 
 .support-team h2,
 .support-team h3 {
@@ -2631,7 +2639,7 @@ html {
 .support-item i {
     font-size: 2.5rem;
     color: var(--sage-green);
-    margin-bottom: 2.2rem;
+    margin-bottom: 1.2rem;
     display: block;
     transition: transform 0.3s ease;
 }
