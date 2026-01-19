@@ -914,7 +914,6 @@ textarea {
 .cta-buttons {
     display: flex;
     gap: 1rem;
-    justify-content: center;
 }
 
 .btn {
@@ -1193,6 +1192,10 @@ textarea {
 .cta-section p {
     font-size: 1.2rem;
     margin-bottom: 2rem;
+}
+
+.cta-section .cta-buttons {
+    justify-content: center;
 }
 
 /* Footer */
