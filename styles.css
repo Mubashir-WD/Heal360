@@ -2588,12 +2588,21 @@ html {
     border-top: 2px solid var(--light-gray);
 }
 
+.support-team h2,
 .support-team h3 {
     text-align: center;
-    font-size: 2rem;
+    font-size: 2.5rem;
     color: var(--dark-green);
-    margin-bottom: 2.5rem;
+    margin-bottom: 1.5rem;
     font-family: 'Playfair Display', serif;
+}
+
+.support-team p {
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto 3rem auto;
+    font-size: 1.1rem;
+    color: #666;
 }
 
 .support-grid {
@@ -2622,7 +2631,7 @@ html {
 .support-item i {
     font-size: 2.5rem;
     color: var(--sage-green);
-    margin-bottom: 1.2rem;
+    margin-bottom: 2.2rem;
     display: block;
     transition: transform 0.3s ease;
 }
