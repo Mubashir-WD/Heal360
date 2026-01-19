@@ -914,6 +914,7 @@ textarea {
 .cta-buttons {
     display: flex;
     gap: 1rem;
+    justify-content: center;
 }
 
 .btn {
