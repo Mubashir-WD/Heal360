@@ -4,334 +4,543 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Heal360 – Natural Fertility Reversal for Men & Women</title>
-    <meta name="description"
-        content="Helping couples conceive naturally through root-cause healing, hormone balance, reproductive wellness, and lifestyle transformation. Led by Dr. Tahera Khaledi and Syed Sajjad.">
-    <meta name="keywords"
-        content="natural fertility reversal, PCOS, endometriosis, male fertility, hormone balance, reproductive wellness">
-    <meta name="google-site-verification" content="XrcIGaRWPa33f-bGA8y5QbT7IB1nkq8RGi2RTyYiP70" />
-    <meta property="og:image" content="images/og_image.jpg">
-    <meta property="og:image:width" content="531">
-    <meta property="og:image:height" content="500">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Poppins:wght@300;400;500;600&display=swap"
-        rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="services-slider.css">
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <title>Homesly stays HRM</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/mobile.css">
+    <script src="https://unpkg.com/feather-icons"></script>
 </head>
 
 <body>
-    <header>
-        <nav>
-            <a href="./" class="logo" aria-label="Heal360 home">
-                <img src="images/og_image.jpg" alt="Heal360 Wellness logo" width="160" height="52">
-            </a>
-            <ul class="nav-links">
-                <li><a href="#home">Home</a></li>
-                <li><a href="about/">About Us</a></li>
-                <li><a href="book/">Book</a></li>
-                <li><a href="team/">Directors</a></li>
-                <li><a href="blog/">Blog</a></li>
-                <li><a href="contact/">Contact</a></li>
-                <!-- <li><a href="login.html">Login</a></li> -->
-            </ul>
-            <div class="hamburger">
-                <span></span>
-                <span></span>
-                <span></span>
+    <div class="layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="brand">
+                <img src="assets/logo.png" alt="Homesly stays HRM Logo" class="brand-logo">
             </div>
-        </nav>
-    </header>
+            <nav class="nav-menu">
+                <div class="nav-label">MENU</div>
+                <a href="#dashboard" class="nav-item nav-link active" data-target="view-dashboard"><i
+                        data-feather="grid"></i> Dashboard</a>
+                <a href="#attendance" class="nav-item nav-link" data-target="view-attendance"><i
+                        data-feather="clock"></i> Attendance</a>
+                <a href="#timeoff" class="nav-item nav-link" data-target="view-timeoff"><i data-feather="briefcase"></i>
+                    Time Off</a>
+                <a href="#calendar" class="nav-item nav-link" data-target="view-calendar"><i data-feather="calendar"></i>
+                    Calendar</a>
+                <a href="#directory" class="nav-item nav-link" data-target="view-directory"><i data-feather="users"></i>
+                    Directory</a>
 
-    <section id="home" class="hero">
-        <div class="hero-content">
-            <h1>Heal360 – Natural Fertility Reversal for Men & Women</h1>
-            <p>Helping couples conceive naturally through root-cause healing, hormone balance, reproductive wellness,
-                and lifestyle transformation.</p>
-            <div class="cta-buttons">
-                <div class="dropdown-wrapper">
-                    <button class="dropdown-toggle btn primary" aria-haspopup="true" aria-expanded="false">
-                        Book Consultation <i class="fas fa-chevron-down"></i>
+                <div class="nav-label mt-auto">PREFERENCES</div>
+                <a href="#settings" class="nav-item nav-link" data-target="view-settings"><i
+                        data-feather="settings"></i> Settings</a>
+            </nav>
+
+            <div class="user-profile">
+                <!-- Profile details -->
+                <img src="" alt="User Avatar" class="avatar" id="sidebarAvatar">
+                <div class="user-details">
+                    <span class="user-name" id="sidebarName">Initializing...</span>
+                    <span class="user-role" id="sidebarRole">Verifying Profile...</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Mobile Overlay -->
+        <div class="mobile-overlay" id="mobileOverlay"></div>
+
+        <!-- Main Workspace -->
+        <main class="main-content">
+            <header class="page-header">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <button id="mobileMenuBtn" class="icon-btn mobile-only"
+                        style="background:transparent; border:none; box-shadow:none; padding:0; flex-shrink: 0; margin-top:-4px;">
+                        <i data-feather="menu"></i>
                     </button>
-                    <div class="dropdown-menu" role="menu">
-                        <a href="https://pf.taherakhaledi.com/free" class="dropdown-item" target="_blank" rel="noopener"
-                            role="menuitem">
-                            <i class="fas fa-flag"></i> India
-                        </a>
-                        <a href="https://pf.taherakhaledi.com/telegu-vsl" class="dropdown-item" target="_blank"
-                            rel="noopener" role="menuitem">
-                            <i class="fas fa-language"></i> Telugu
-                        </a>
-                        <a href="https://gulf.taherakhaledi.com" class="dropdown-item" target="_blank" rel="noopener"
-                            role="menuitem">
-                            <i class="fas fa-globe"></i> International (Outside India)
-                        </a>
+                    <div>
+                        <h1 class="page-title" id="pageTitleText">Dashboard</h1>
+                        <p class="page-subtitle" id="currentDateDisplay">Loading Date...</p>
                     </div>
                 </div>
-                <a href="book/" class="btn secondary">Join Heal360</a>
-            </div>
-        </div>
-        <div class="hero-image">
-            <img src="images/hero_fertility.png" alt="Natural fertility healing illustration" loading="lazy">
-        </div>
-    </section>
+                <div class="header-actions">
+            </header>
 
-    <!-- New Attractive Services Slider -->
-    <section class="services-section">
-        <div class="slider-wrapper">
-            <h2>Our Specialized Services</h2>
-            <div class="slider-container">
-                <div class="services-slider" id="servicesSlider">
-                    <!-- Service 1 -->
-                    <div class="service-slide">
-                        <div class="service-icon-wrapper">
-                            <div class="service-icon">
-                                <img src="images/PCOS.png" alt="PCOS Reversal" loading="lazy">
+            <!-- VIEW: DASHBOARD -->
+            <div id="view-dashboard" class="view-section active">
+                <div class="dashboard-grid">
+                    <div class="col-main">
+                        <!-- Company Notice Board -->
+                        <div class="card notice-board-card" style="margin-bottom: 24px;">
+                            <div class="card-header border-bottom">
+                                <h2 class="card-title" style="display: flex; align-items: center; gap: 8px;"><i data-feather="bell" style="width: 18px; height: 18px; color: var(--primary);"></i> Company Notice Board</h2>
+                            </div>
+                            <div class="card-body" id="noticeBoardContainer" style="padding: 16px 24px; max-height: 250px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px;">
+                                <div style="color: #64748B; text-align: center; padding: 16px 0;">No active notices.</div>
                             </div>
                         </div>
-                        <h3>PCOS Reversal</h3>
-                        <p>Address the root causes of Polycystic Ovary Syndrome to regulate cycles and restore fertility
-                            naturally without synthetic hormones.</p>
-                        <a href="book/" class="service-link">Learn More <i class="fas fa-arrow-right"></i></a>
+
+                        <div class="card time-tracking-card">
+                            <div class="card-header border-bottom">
+                                <h2 class="card-title">Live Attendance (GMT)</h2>
+                                <div class="current-time-display" id="currentTimeDisplay">00:00:00</div>
+                            </div>
+                            <div class="tracking-stats">
+                                <div class="stat-box">
+                                    <span class="stat-label">Clock In</span>
+                                    <span class="stat-value" id="valClockIn">--:--</span>
+                                </div>
+                                <div class="stat-box">
+                                    <span class="stat-label">Clock Out</span>
+                                    <span class="stat-value" id="valClockOut">--:--</span>
+                                </div>
+                                <div class="stat-box highlight">
+                                    <span class="stat-label">Total Hours</span>
+                                    <span class="stat-value" id="valTotalHours">0h 0m</span>
+                                </div>
+                            </div>
+                            <div class="tracking-actions">
+                                <button id="clockInBtn" class="btn btn-primary btn-lg"><i data-feather="log-in"></i>
+                                    Clock In</button>
+                                <button id="clockOutBtn" class="btn btn-secondary btn-lg" disabled><i
+                                        data-feather="log-out"></i> Clock Out</button>
+                            </div>
+                        </div>
+
+                        <!-- Attendance History Preview -->
+                        <div class="card history-card">
+                            <div class="card-header border-bottom">
+                                <h2 class="card-title">Recent Attendance</h2>
+                                <a href="#attendance" class="btn btn-text">View All</a>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Clock In (GMT)</th>
+                                            <th>Clock Out (GMT)</th>
+                                            <th>Total Time</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="attendanceHistoryTable">
+                                        <!-- Populated via JS -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
 
-                    <!-- Service 2 -->
-                    <div class="service-slide">
-                        <div class="service-icon-wrapper">
-                            <div class="service-icon">
-                                <img src="images/Male_Fertility.png" alt="Male Fertility" loading="lazy">
+                    <div class="col-side">
+                        <div class="leave-balances">
+                            <div class="balance-card">
+                                <div class="balance-icon bg-blue"><i data-feather="sun"></i></div>
+                                <div class="balance-info">
+                                    <span class="balance-qty" id="balanceAnnual">15 Days</span>
+                                    <span class="balance-type">Annual Leave</span>
+                                </div>
+                            </div>
+                            <div class="balance-card">
+                                <div class="balance-icon bg-red"><i data-feather="thermometer"></i></div>
+                                <div class="balance-info">
+                                    <span class="balance-qty" id="balanceSick">4 Days</span>
+                                    <span class="balance-type">Sick Leave</span>
+                                </div>
+                            </div>
+                            <div class="balance-card">
+                                <div class="balance-icon bg-purple"><i data-feather="gift"></i></div>
+                                <div class="balance-info">
+                                    <span class="balance-qty" id="balanceFestival">3 Days</span>
+                                    <span class="balance-type">Festival Leaves</span>
+                                </div>
                             </div>
                         </div>
-                        <h3>Male Fertility</h3>
-                        <p>Boost sperm count, motility, and quality through targeted nutritional protocols and lifestyle
-                            adjustments.</p>
-                        <a href="book/" class="service-link">Learn More <i class="fas fa-arrow-right"></i></a>
-                    </div>
 
-                    <!-- Service 3 -->
-                    <div class="service-slide">
-                        <div class="service-icon-wrapper">
-                            <div class="service-icon">
-                                <img src="images/Endo.png" alt="Endometriosis" loading="lazy">
+                        <!-- Form matching exact UI reference -->
+                        <div class="card request-leave-card form-container">
+                            <div class="card-header border-bottom">
+                                <h2 class="card-title" style="font-size: 1.25rem;">Request Time Off</h2>
+                            </div>
+                            <div class="card-body">
+                                <form id="leaveRequestForm">
+                                    <div class="form-group">
+                                        <label>Leave Type</label>
+                                        <div class="select-wrapper">
+                                            <select required id="leaveType">
+                                                <option value="" disabled selected>Select a leave type</option>
+                                                <option value="sick">Sick Leave</option>
+                                                <option value="half">Half Day Leave</option>
+                                                <option value="annual">Annual Leave</option>
+                                                <option value="festival">Festival Leave</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-row date-row">
+                                        <div class="form-group">
+                                            <label>Start Date</label>
+                                            <input type="date" required id="leaveStart">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>End Date</label>
+                                            <input type="date" required id="leaveEnd">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Reason</label>
+                                        <textarea rows="3" placeholder="Optional details..."></textarea>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary btn-block btn-submit-lg">
+                                        <i data-feather="send"></i> Submit Request
+                                    </button>
+                                </form>
                             </div>
                         </div>
-                        <h3>Endometriosis</h3>
-                        <p>Manage pain and inflammation while improving egg quality and uterine health for better
-                            conception chances.</p>
-                        <a href="book/" class="service-link">Learn More <i class="fas fa-arrow-right"></i></a>
-                    </div>
-
-                    <!-- Service 4 -->
-                    <div class="service-slide">
-                        <div class="service-icon-wrapper">
-                            <div class="service-icon">
-                                <img src="images/Testosterone.png" alt="Hormonal Balance" loading="lazy">
-                            </div>
-                        </div>
-                        <h3>Hormonal Balance</h3>
-                        <p>Correct thyroid, cortisol, and reproductive hormone imbalances that may be preventing
-                            pregnancy.</p>
-                        <a href="book/" class="service-link">Learn More <i class="fas fa-arrow-right"></i></a>
-                    </div>
-
-                    <!-- Service 5 -->
-                    <div class="service-slide">
-                        <div class="service-icon-wrapper">
-                            <div class="service-icon">
-                                <img src="images/DNA.png" alt="Unexplained Infertility" loading="lazy">
-                            </div>
-                        </div>
-                        <h3>Unexplained Infertility</h3>
-                        <p>Deep-dive investigative approach to uncover hidden metabolic or environmental factors
-                            affecting fertility.</p>
-                        <a href="book/" class="service-link">Learn More <i class="fas fa-arrow-right"></i></a>
-                    </div>
-
-                    <!-- Service 6 -->
-                    <div class="service-slide">
-                        <div class="service-icon-wrapper">
-                            <div class="service-icon">
-                                <img src="images/egg_care.png" alt="Egg Quality" loading="lazy">
-                            </div>
-                        </div>
-                        <h3>Egg Quality & Care</h3>
-                        <p>Improve oocyte quality for conception and receive supportive care for recovery and health.
-                        </p>
-                        <a href="book/" class="service-link">Learn More <i class="fas fa-arrow-right"></i></a>
                     </div>
                 </div>
             </div>
 
-            <div class="slider-controls">
-                <button class="slider-btn prev" id="sliderPrev" aria-label="Previous Service">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M15 19L8 12L15 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                            stroke-linejoin="round" />
-                    </svg>
-                </button>
-                <div class="slider-dots" id="sliderDots">
-                    <!-- Dots generated by JS -->
+            <!-- VIEW: ATTENDANCE -->
+            <div id="view-attendance" class="view-section" style="display: none;">
+                <div class="card">
+                    <div class="card-header border-bottom">
+                        <h2 class="card-title">Full Attendance Log</h2>
+                    </div>
+                    <div class="card-body" style="padding: 0;">
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Clock In (GMT)</th>
+                                        <th>Clock Out (GMT)</th>
+                                        <th>Total Time</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="fullAttendanceTable">
+                                    <!-- Populated via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
-                <button class="slider-btn next" id="sliderNext" aria-label="Next Service">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M9 5L16 12L9 19" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                            stroke-linejoin="round" />
-                    </svg>
-                </button>
             </div>
-        </div>
-    </section>
 
-    <section class="experts">
-        <h2>Meet Our Experts</h2>
-        <div class="expert-cards">
-            <div class="expert-card">
-                <img src="images/dr_tahera.JPG" alt="Dr. Tahera Khaledi" loading="lazy">
-                <h3>Dr. Tahera Khaledi</h3>
-                <p>Functional Medicine & Women's Hormone Expert</p>
-                <p>Specializes in PCOS, Endometriosis, PMS, Adenomyosis, unexplained infertility.</p>
+            <!-- VIEW: TIME OFF -->
+            <div id="view-timeoff" class="view-section" style="display: none;">
+                <div class="card">
+                    <div class="card-header border-bottom">
+                        <h2 class="card-title">Leave Applications Overview</h2>
+                    </div>
+                    <div class="card-body" style="padding: 0;">
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Leave Type</th>
+                                        <th>Applied On</th>
+                                        <th>Duration</th>
+                                        <th>Comments</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="employeeLeavesTable">
+                                    <tr>
+                                        <td colspan="5" style="text-align: center; color: #64748B;">Fetching leave
+                                            requests...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="expert-card">
-                <img src="images/sajjad.png" alt="Syed Sajjad" loading="lazy">
-                <h3>Syed Sajjad</h3>
-                <p>Naturopath & Male Reproductive Health Expert</p>
-                <p>Expert in male hormonal balance, sperm health, lifestyle reversal.</p>
-            </div>
-        </div>
-    </section>
 
-    <section class="outcomes">
-        <h2>Book Outcomes</h2>
-        <div class="outcome-grid">
-            <div class="outcome-item">
-                <i class="fas fa-balance-scale"></i>
-                <h3>Hormone Correction</h3>
-                <p>Balance hormones naturally for optimal fertility.</p>
+            <!-- VIEW: CALENDAR -->
+            <div id="view-calendar" class="view-section" style="display: none;">
+                <div class="card">
+                    <div class="card-header border-bottom" style="display: flex; justify-content: space-between; align-items: center;">
+                        <h2 class="card-title"><i data-feather="calendar" style="width: 18px; height: 18px; color: var(--primary); vertical-align: text-bottom; margin-right: 8px;"></i>Company Annual Calendar</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="calendar-wrapper">
+                            <div class="calendar-header-row">
+                                <button class="calendar-nav-btn" id="btnPrevMonth"><i data-feather="chevron-left" style="width:14px; height:14px;"></i> Previous</button>
+                                <h2 class="calendar-month-title" id="calendarMonthTitle">June 2026</h2>
+                                <button class="calendar-nav-btn" id="btnNextMonth">Next <i data-feather="chevron-right" style="width:14px; height:14px;"></i></button>
+                            </div>
+                            <div class="calendar-grid" id="calendarGrid">
+                                <!-- Populated dynamically by JS -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="outcome-item">
-                <i class="fas fa-egg"></i>
-                <h3>Egg Quality Improvement</h3>
-                <p>Enhance egg health through nutrition and lifestyle.</p>
-            </div>
-            <div class="outcome-item">
-                <i class="fas fa-sperm"></i>
-                <h3>Sperm Count & Motility Boost</h3>
-                <p>Increase sperm quality and movement.</p>
-            </div>
-            <div class="outcome-item">
-                <i class="fas fa-brain"></i>
-                <h3>Stress & Trauma Healing</h3>
-                <p>Address emotional factors affecting fertility.</p>
-            </div>
-            <div class="outcome-item">
-                <i class="fas fa-weight"></i>
-                <h3>Metabolic Balance</h3>
-                <p>Optimize metabolism for reproductive health.</p>
-            </div>
-            <div class="outcome-item">
-                <i class="fas fa-leaf"></i>
-                <h3>Gut & Inflammation Repair</h3>
-                <p>Heal gut health to reduce inflammation.</p>
-            </div>
-        </div>
-    </section>
 
-    <section class="methodology">
-        <h2>4-Step Heal360 Methodology</h2>
-        <div class="steps">
-            <div class="step">
-                <span class="step-number">1</span>
-                <h3>Assessment</h3>
-                <p>Comprehensive evaluation of root causes.</p>
+            <!-- VIEW: DIRECTORY -->
+            <div id="view-directory" class="view-section" style="display: none;">
+                <div class="card">
+                    <div class="card-header border-bottom">
+                        <h2 class="card-title">Employee Directory </h2>
+                    </div>
+                    <div class="card-body">
+                        <p style="color: var(--text-secondary);">Company employee directory and team allocations will be
+                            listed here.</p>
+                    </div>
+                </div>
             </div>
-            <div class="step">
-                <span class="step-number">2</span>
-                <h3>Personalized Plan</h3>
-                <p>Tailored protocols for men and women.</p>
-            </div>
-            <div class="step">
-                <span class="step-number">3</span>
-                <h3>Implementation</h3>
-                <p>Guided lifestyle and nutritional changes.</p>
-            </div>
-            <div class="step">
-                <span class="step-number">4</span>
-                <h3>Monitoring & Support</h3>
-                <p>Ongoing tracking and adjustments.</p>
-            </div>
-        </div>
-    </section>
 
-    <section class="success-stories">
-        <h2>Success Stories</h2>
-        <div class="carousel">
-            <div class="story">
-                <blockquote>"Heal360 helped me conceive naturally after years of trying. My PCOS is under control!"
-                </blockquote>
-                <cite>- Sarah, 32</cite>
-            </div>
-            <div class="story">
-                <blockquote>"As a man, I never thought lifestyle changes could improve my fertility. My sperm count
-                    doubled!"</blockquote>
-                <cite>- John, 35</cite>
-            </div>
-            <div class="story">
-                <blockquote>"The book's holistic approach healed my endometriosis and stress. We're expecting our
-                    first!"</blockquote>
-                <cite>- Emma, 28</cite>
-            </div>
-        </div>
-    </section>
+            <!-- VIEW: SETTINGS -->
+            <div id="view-settings" class="view-section" style="display: none;">
+                <div class="profile-grid">
+                    <!-- Left: Form Card -->
+                    <div class="card settings-card">
+                        <div class="card-header border-bottom">
+                            <h2 class="card-title">Profile Settings</h2>
+                        </div>
+                        <div class="card-body">
+                            <form id="settingsForm">
+                                <div class="profile-upload-group">
+                                    <img src="" alt="Profile" class="avatar-lg" id="settingsAvatarPreview">
+                                    <div class="upload-actions">
+                                        <label for="profileUpload" class="btn btn-secondary btn-sm">Change
+                                            Picture</label>
+                                        <input type="file" id="profileUpload" accept="image/*" style="display: none;">
+                                        <p class="help-text">JPG, GIF or PNG. Max size of 800K</p>
+                                    </div>
+                                </div>
 
-    <section class="video-section">
-        <h2>Watch Our Short Videos</h2>
-        <div class="video-container bis_skin_checked" data-checked="1">
-            <iframe src="https://www.youtube.com/embed/5v5X_9r7lIc" title="Heal360 Main Video" loading="lazy"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                allowfullscreen></iframe>
-        </div>
-    </section>
+                                <h3 class="subsection-title">Personal Information</h3>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Full Name</label>
+                                        <input type="text" id="settingsName" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Employee ID</label>
+                                        <input type="text" id="settingsEmpId" readonly style="background-color: #F1F5F9; color: #64748B; cursor: not-allowed;" placeholder="Assigned by Admin">
+                                    </div>
+                                </div>
 
-    <section class="cta-section">
-        <h2>Ready to Start Your Fertility Journey?</h2>
-        <p>Join Heal360 and take the first step towards natural conception.</p>
-        <a href="book/" class="btn primary">Join Heal360</a>
-    </section>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Email Address</label>
+                                        <input type="email" id="settingsEmail" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Phone Number</label>
+                                        <input type="tel" id="settingsPhone" placeholder="+91 98765 43210">
+                                    </div>
+                                </div>
 
-    <footer>
-        <div class="footer-content">
-            <div class="footer-section footer-brand">
-                <img src="images/og_image.jpg" alt="Heal360 Wellness logo" class="footer-logo" loading="lazy">
-                <h3>Heal360</h3>
-                <p>Natural Fertility Reversal Book</p>
-            </div>
-            <div class="footer-section">
-                <h3>Quick Links</h3>
-                <ul>
-                    <li><a href="about/">About Us</a></li>
-                    <li><a href="book/">Book</a></li>
-                    <li><a href="blog/">Blog</a></li>
-                    <li><a href="contact/">Contact</a></li>
-                    <li><a href="privacy/">Privacy Policy</a></li>
-                </ul>
-            </div>
-            <div class="footer-section">
-                <h3>Contact</h3>
-                <p><i class="fas fa-phone"></i> +91-8919242355</p>
-                <p><i class="fas fa-envelope"></i> support@drtaheras.com</p>
-                <p><i class="fab fa-whatsapp"></i> WhatsApp: +91-8919242355</p>
-            </div>
-        </div>
-        </div>
-        <div class="footer-bottom">
-            <p>&copy; 2025 Heal360. All rights reserved.</p>
-        </div>
-    </footer>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Job Title / Designation</label>
+                                        <input type="text" id="settingsDesignation" placeholder="e.g. Graphic Designer">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Department</label>
+                                        <div class="select-wrapper">
+                                            <select id="settingsDepartment">
+                                                <option value="">Select Department</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
 
-    <script src="script.js"></script>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Date of Birth</label>
+                                        <input type="date" id="settingsDob">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Gender</label>
+                                        <div class="select-wrapper">
+                                            <select id="settingsGender">
+                                                <option value="female">Female</option>
+                                                <option value="male">Male</option>
+                                                <option value="other">Other</option>
+                                                <option value="prefer_not">Prefer not to say</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Join Date</label>
+                                        <input type="date" id="settingsJoinDate">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Valid Till / Expiry</label>
+                                        <input type="date" id="settingsExpiryDate">
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Emergency Contact</label>
+                                        <input type="tel" id="settingsEmergencyContact" placeholder="+91 98765 43210">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Blood Group</label>
+                                        <div class="select-wrapper">
+                                            <select id="settingsBloodGroup">
+                                                <option value="">Select Blood Group</option>
+                                                <option value="A+">A+</option>
+                                                <option value="A-">A-</option>
+                                                <option value="B+">B+</option>
+                                                <option value="B-">B-</option>
+                                                <option value="AB+">AB+</option>
+                                                <option value="AB-">AB-</option>
+                                                <option value="O+">O+</option>
+                                                <option value="O-">O-</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-actions mt-4 text-right">
+                                    <button type="submit" class="btn btn-primary"><i data-feather="save"></i> Save Changes</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Right: Digital ID Card Card -->
+                    <div class="card id-card-preview-card" style="display: flex; flex-direction: column; align-items: center; padding: 24px;">
+                        <div class="id-card-preview-header-row" style="width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <h2 class="card-title" style="margin: 0;">Digital Employee ID Card</h2>
+                            <!-- Switcher controls -->
+                            <div class="id-card-switcher">
+                                <button type="button" class="switcher-btn active" id="btnShowFront">Front</button>
+                                <button type="button" class="switcher-btn" id="btnShowBack">Back</button>
+                                <button type="button" class="switcher-btn" id="btnShowSheet">Print Layout</button>
+                            </div>
+                        </div>
+
+                        <div class="id-card-wrapper">
+                            <div class="id-card-container preview-front" id="idCardContainer">
+                                <!-- FRONT CARD -->
+                                <div class="id-card id-card-front" id="idCardFront">
+                                    <div class="id-card-bg-gradient-top"></div>
+                                    <div class="id-card-bg-gradient-bottom"></div>
+                                    
+                                    <div class="id-card-header">
+                                        <img src="assets/logo.png" alt="Homesly stays HRM Logo" class="id-card-logo">
+                                        <span class="id-card-badge id-card-badge-active">ACTIVE</span>
+                                    </div>
+                                    
+                                    <div class="id-card-avatar-container">
+                                        <div class="id-card-avatar-ring">
+                                            <img src="https://ui-avatars.com/api/?name=Loading&background=4F46E5&color=fff" alt="ID Profile" class="id-card-avatar" id="idCardAvatar">
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="id-card-info">
+                                        <div class="id-card-name" id="idCardName">Employee Name</div>
+                                        <div class="id-card-title" id="idCardDesignation">Designation</div>
+                                    </div>
+                                    
+                                    <div class="id-card-details">
+                                        <div class="id-card-detail-item">
+                                            <span class="id-card-detail-label">ID Number</span>
+                                            <span class="id-card-detail-value" id="idCardEmpId">HM-0000</span>
+                                        </div>
+                                        <div class="id-card-detail-item">
+                                            <span class="id-card-detail-label">Department</span>
+                                            <span class="id-card-detail-value" id="idCardDept">Unassigned</span>
+                                        </div>
+                                        <div class="id-card-detail-item">
+                                            <span class="id-card-detail-label">Gender</span>
+                                            <span class="id-card-detail-value" id="idCardGender">Other</span>
+                                        </div>
+                                        <div class="id-card-detail-item">
+                                            <span class="id-card-detail-label">Blood Group</span>
+                                            <span class="id-card-detail-value" id="idCardBloodGroup">-</span>
+                                        </div>
+                                        <div class="id-card-detail-item" style="grid-column: span 2;">
+                                            <span class="id-card-detail-label">Phone</span>
+                                            <span class="id-card-detail-value" id="idCardPhone">-</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="id-card-footer">
+                                        <div class="id-card-qr-box">
+                                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=HM-0000" alt="QR Code" class="id-card-qr" id="idCardQR">
+                                        </div>
+                                        <div class="id-card-barcode-box">
+                                            <div class="id-card-barcode"></div>
+                                            <span class="id-card-barcode-text" id="idCardBarcodeText">HM0000</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- BACK CARD -->
+                                <div class="id-card id-card-back" id="idCardBack">
+                                    <div class="id-card-bg-gradient-top"></div>
+                                    <div class="id-card-bg-gradient-bottom"></div>
+                                    
+                                    <div class="id-card-header-back">
+                                        <h3 class="id-card-back-title">TERMS & CONDITIONS</h3>
+                                    </div>
+                                    
+                                    <div class="id-card-tc-content">
+                                        <ul class="tc-list">
+                                            <li>This card is the property of Homesly stays HRM. If found, please return to human resources.</li>
+                                            <li>The cardholder is responsible for the custody of this card.</li>
+                                            <li>Use of this card is subject to company policies and guidelines.</li>
+                                        </ul>
+                                    </div>
+                                    
+                                    <div class="id-card-back-details">
+                                        <div class="id-card-detail-item">
+                                            <span class="id-card-detail-label">Join Date</span>
+                                            <span class="id-card-detail-value" id="idCardJoinDate">-</span>
+                                        </div>
+                                        <div class="id-card-detail-item">
+                                            <span class="id-card-detail-label">Valid Till</span>
+                                            <span class="id-card-detail-value" id="idCardExpiryDate">-</span>
+                                        </div>
+                                        <div class="id-card-detail-item" style="grid-column: span 2;">
+                                            <span class="id-card-detail-label">Emergency Contact</span>
+                                            <span class="id-card-detail-value" id="idCardEmergencyContact">-</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="id-card-signature-area">
+                                        <div class="signature-line">
+                                            <span class="signature-text" id="idCardSignature">Employee Name</span>
+                                        </div>
+                                        <span class="signature-label">Authorized Signature</span>
+                                    </div>
+                                    
+                                    <div class="id-card-footer-back">
+                                        <p class="company-website">homeslystays.com</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Card Download / Export Actions -->
+                        <div class="id-card-actions" style="margin-top: 24px; display: flex; gap: 12px; width: 100%; justify-content: center;">
+                            <button type="button" class="btn btn-primary" id="btnDownloadPDF" style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                <i data-feather="download"></i> Download High-Res PDF
+                            </button>
+                            <button type="button" class="btn btn-secondary" id="btnPrintCard" style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                <i data-feather="printer"></i> Print ID Card
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+    <!-- Load html2canvas and jsPDF for PDF generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script>feather.replace();</script>
+    <script type="module" src="js/app.js"></script>
 </body>
-
 </html>
