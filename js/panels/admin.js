@@ -68,6 +68,7 @@ const secondaryAuth = getAuth(secondaryApp);
                     }
 
                     initializeAdminUI();
+                    initializeAdminSettings();
                     triggerRealTimeHRDataPipeline();
                 } catch (e) {
                     console.error("Auth security gate error:", e);
@@ -119,7 +120,8 @@ const secondaryAuth = getAuth(secondaryApp);
                 '#admin-employees': 'Employee Directory & Roles',
                 '#admin-departments': 'Department Management',
                 '#admin-notices': 'Company Announcement Board',
-                '#admin-calendar': 'Annual Event Calendar'
+                '#admin-calendar': 'Annual Event Calendar',
+                '#admin-settings': 'Account Settings'
             };
             if (pageTitleText) pageTitleText.textContent = titleMap[hash] || 'HR Portal';
         }
@@ -297,8 +299,6 @@ const secondaryAuth = getAuth(secondaryApp);
 
             let isLate = (loginHour > 9) || (loginHour === 9 && loginMin >= 15);
 
-            if (log.clockOutTime === null) {
-                metricActiveShiftsCount++;
             let badgeHTML = `<div class="attendance-badges-list">`;
             if (log.lateClockIn) badgeHTML += `<span class="attendance-badge badge-late-in">Late In</span>`;
             if (log.earlyClockIn) badgeHTML += `<span class="attendance-badge badge-early-in">Early In</span>`;
@@ -1401,6 +1401,350 @@ const secondaryAuth = getAuth(secondaryApp);
             adminCalendarCurrentDate.setMonth(adminCalendarCurrentDate.getMonth() + 1);
             renderAdminCalendar();
         });
+    }
+
+    function initializeAdminSettings() {
+        if (!adminProfile) return;
+
+        // 1. Populate form inputs
+        const sName = document.getElementById('adminSettingsName');
+        const sEmpId = document.getElementById('adminSettingsEmpId');
+        const sEmail = document.getElementById('adminSettingsEmail');
+        const sPhone = document.getElementById('adminSettingsPhone');
+        const sDesignation = document.getElementById('adminSettingsDesignation');
+        const sDepartment = document.getElementById('adminSettingsDepartment');
+        const sDob = document.getElementById('adminSettingsDob');
+        const sGender = document.getElementById('adminSettingsGender');
+        const sEmergencyContact = document.getElementById('adminSettingsEmergencyContact');
+        const sBloodGroup = document.getElementById('adminSettingsBloodGroup');
+        const sAvatarPreview = document.getElementById('adminSettingsAvatarPreview');
+
+        if (sName) sName.value = adminProfile.name || "";
+        if (sEmpId) sEmpId.value = adminProfile.employeeId || "";
+        if (sEmail) sEmail.value = adminProfile.email || "";
+        if (sPhone) sPhone.value = adminProfile.phone || "";
+        if (sDesignation) sDesignation.value = adminProfile.designation || "";
+        if (sDepartment) sDepartment.value = adminProfile.department || "";
+        if (sDob) sDob.value = adminProfile.dob || "";
+        if (sGender) sGender.value = adminProfile.gender || "other";
+        if (sEmergencyContact) sEmergencyContact.value = adminProfile.emergencyContact || "";
+        if (sBloodGroup) sBloodGroup.value = adminProfile.bloodGroup || "";
+        if (sAvatarPreview) sAvatarPreview.src = adminProfile.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(adminProfile.name || 'Admin')}&background=4F46E5&color=fff`;
+
+        // 2. Populate ID Card preview
+        updateAdminSelfIDCard();
+
+        // 3. Bind live input change preview
+        const previewFields = [
+            { id: 'adminSettingsName', targetId: 'adminSelfIdCardName', default: 'Admin Name' },
+            { id: 'adminSettingsDesignation', targetId: 'adminSelfIdCardDesignation', default: 'Designation' },
+            { id: 'adminSettingsPhone', targetId: 'adminSelfIdCardPhone', default: '-' },
+            { id: 'adminSettingsEmergencyContact', targetId: 'adminSelfIdCardEmergencyContact', default: '-' }
+        ];
+
+        previewFields.forEach(f => {
+            const el = document.getElementById(f.id);
+            if (el) {
+                el.addEventListener('input', (e) => {
+                    const target = document.getElementById(f.targetId);
+                    if (target) target.textContent = e.target.value || f.default;
+
+                    if (f.id === 'adminSettingsName') {
+                        const sigTarget = document.getElementById('adminSelfIdCardSignature');
+                        if (sigTarget) sigTarget.textContent = e.target.value || f.default;
+                    }
+                });
+            }
+        });
+
+        const deptEl = document.getElementById('adminSettingsDepartment');
+        if (deptEl) {
+            deptEl.addEventListener('input', (e) => {
+                const target = document.getElementById('adminSelfIdCardDept');
+                if (target) target.textContent = e.target.value || 'Unassigned';
+            });
+        }
+
+        const genderEl = document.getElementById('adminSettingsGender');
+        if (genderEl) {
+            genderEl.addEventListener('change', (e) => {
+                const target = document.getElementById('adminSelfIdCardGender');
+                if (target) {
+                    const val = e.target.value;
+                    const genderLabel = {
+                        'female': 'Female',
+                        'male': 'Male',
+                        'other': 'Other',
+                        'prefer_not': 'Other'
+                    }[val] || val || 'Other';
+                    target.textContent = genderLabel;
+                }
+            });
+        }
+
+        const bgEl = document.getElementById('adminSettingsBloodGroup');
+        if (bgEl) {
+            bgEl.addEventListener('change', (e) => {
+                const target = document.getElementById('adminSelfIdCardBloodGroup');
+                if (target) target.textContent = e.target.value || '-';
+            });
+        }
+
+        // 4. Bind profile image upload
+        const profUpload = document.getElementById('adminProfileUpload');
+        if (profUpload) {
+            profUpload.addEventListener('change', function () {
+                if (this.files && this.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        adminProfile.avatar = e.target.result;
+                        if (sAvatarPreview) sAvatarPreview.src = e.target.result;
+                        const cardAvatar = document.getElementById('adminSelfIdCardAvatar');
+                        if (cardAvatar) cardAvatar.src = e.target.result;
+                    }
+                    reader.readAsDataURL(this.files[0]);
+                }
+            });
+        }
+
+        // 5. Form submission
+        const form = document.getElementById('adminSettingsForm');
+        if (form) {
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const btn = document.getElementById('adminSettingsSubmitBtn');
+                const origHTML = btn.innerHTML;
+
+                btn.disabled = true;
+                btn.innerHTML = `<i data-feather="loader"></i> Saving...`;
+                feather.replace();
+
+                const profilePayload = {
+                    name: document.getElementById('adminSettingsName').value,
+                    email: document.getElementById('adminSettingsEmail').value,
+                    phone: document.getElementById('adminSettingsPhone').value,
+                    dob: document.getElementById('adminSettingsDob').value,
+                    gender: document.getElementById('adminSettingsGender').value,
+                    designation: document.getElementById('adminSettingsDesignation').value,
+                    department: document.getElementById('adminSettingsDepartment').value,
+                    avatar: adminProfile.avatar || "",
+                    emergencyContact: document.getElementById('adminSettingsEmergencyContact').value,
+                    bloodGroup: document.getElementById('adminSettingsBloodGroup').value
+                };
+
+                try {
+                    const userRef = doc(db, "users", CURRENT_ADMIN_ID);
+                    await updateDoc(userRef, profilePayload);
+
+                    adminProfile = { ...adminProfile, ...profilePayload };
+                    
+                    // Update header user profile UI
+                    initializeAdminUI();
+
+                    btn.innerHTML = `<i data-feather="check"></i> Profile Updated`;
+                    btn.classList.add('btn-success');
+                    feather.replace();
+
+                    setTimeout(() => {
+                        btn.innerHTML = origHTML;
+                        btn.classList.remove('btn-success');
+                        btn.disabled = false;
+                        feather.replace();
+                    }, 2000);
+
+                } catch (err) {
+                    console.error("[Firebase] Admin Profile Update Error: ", err);
+                    btn.innerHTML = `<i data-feather="alert-circle"></i> Update Failed`;
+                    setTimeout(() => {
+                        btn.innerHTML = origHTML;
+                        btn.disabled = false;
+                        feather.replace();
+                    }, 2000);
+                }
+            });
+        }
+
+        // 6. ID Card Switcher and Export PDF
+        const idCardContainer = document.getElementById('adminSelfIdCardContainer');
+        const switcherBtns = document.querySelectorAll('.id-card-switcher button');
+        if (switcherBtns && idCardContainer) {
+            switcherBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    if (btn.id === 'adminSelfBtnShowFront' || btn.id === 'adminSelfBtnShowBack' || btn.id === 'adminSelfBtnShowSheet') {
+                        switcherBtns.forEach(b => {
+                            if (b.id === 'adminSelfBtnShowFront' || b.id === 'adminSelfBtnShowBack' || b.id === 'adminSelfBtnShowSheet') {
+                                b.classList.remove('active');
+                            }
+                        });
+                        btn.classList.add('active');
+                        idCardContainer.className = "id-card-container";
+                        if (btn.id === 'adminSelfBtnShowFront') idCardContainer.classList.add('preview-front');
+                        if (btn.id === 'adminSelfBtnShowBack') idCardContainer.classList.add('preview-back');
+                        if (btn.id === 'adminSelfBtnShowSheet') idCardContainer.classList.add('preview-sheet');
+                    }
+                });
+            });
+        }
+
+        const btnDownloadPDF = document.getElementById('adminSelfBtnDownloadPDF');
+        if (btnDownloadPDF && idCardContainer) {
+            btnDownloadPDF.addEventListener('click', async () => {
+                const { jsPDF } = window.jspdf;
+                const origHTML = btnDownloadPDF.innerHTML;
+                btnDownloadPDF.disabled = true;
+                btnDownloadPDF.innerHTML = `<i data-feather="loader"></i> Generating...`;
+                feather.replace();
+
+                try {
+                    const idCardFront = document.getElementById('adminSelfIdCardFront');
+                    const idCardBack = document.getElementById('adminSelfIdCardBack');
+                    const originalContainerClass = idCardContainer.className;
+                    
+                    idCardContainer.className = "id-card-container preview-sheet";
+                    
+                    const canvasFront = await html2canvas(idCardFront, {
+                        scale: 3,
+                        useCORS: true,
+                        allowTaint: true,
+                        backgroundColor: null
+                    });
+                    const imgFront = canvasFront.toDataURL('image/png');
+
+                    const canvasBack = await html2canvas(idCardBack, {
+                        scale: 3,
+                        useCORS: true,
+                        allowTaint: true,
+                        backgroundColor: null
+                    });
+                    const imgBack = canvasBack.toDataURL('image/png');
+                    
+                    idCardContainer.className = originalContainerClass;
+
+                    const pdf = new jsPDF({
+                        orientation: 'portrait',
+                        unit: 'mm',
+                        format: 'a4'
+                    });
+
+                    pdf.setFont("helvetica", "bold");
+                    pdf.setFontSize(16);
+                    pdf.setTextColor(15, 23, 42);
+                    pdf.text("Homesly stays HRM Employee ID Card", 105, 20, { align: "center" });
+                    
+                    pdf.setFont("helvetica", "normal");
+                    pdf.setFontSize(10);
+                    pdf.setTextColor(100, 116, 139);
+                    pdf.text(`Printed for: ${adminProfile.name || 'Staff'}. CR80 Dimensions (54mm x 85.6mm).`, 105, 26, { align: "center" });
+
+                    const cardW = 54;
+                    const cardH = 85.6;
+                    const startY = 45;
+                    const frontX = 46;
+                    const backX = frontX + cardW + 10;
+
+                    pdf.addImage(imgFront, 'PNG', frontX, startY, cardW, cardH);
+                    pdf.addImage(imgBack, 'PNG', backX, startY, cardW, cardH);
+
+                    pdf.setDrawColor(203, 213, 225);
+                    pdf.setLineDashPattern([2, 2], 0);
+                    pdf.rect(frontX, startY, cardW, cardH);
+                    pdf.rect(backX, startY, cardW, cardH);
+
+                    pdf.setFont("helvetica", "normal");
+                    pdf.setFontSize(9);
+                    pdf.setTextColor(148, 163, 184);
+                    pdf.text("Instructions: Cut along the dotted line, fold in half, and laminate.", 105, startY + cardH + 15, { align: "center" });
+
+                    const fileName = `homesly_stays_hrm_id_card_${adminProfile.employeeId || 'HM-0000'}.pdf`;
+                    pdf.save(fileName);
+
+                    btnDownloadPDF.innerHTML = `<i data-feather="check"></i> Downloaded`;
+                    setTimeout(() => {
+                        btnDownloadPDF.innerHTML = origHTML;
+                        btnDownloadPDF.disabled = false;
+                        feather.replace();
+                    }, 2000);
+
+                } catch (err) {
+                    console.error("PDF generation failed:", err);
+                    alert("PDF generation failed. Please try again.");
+                    btnDownloadPDF.innerHTML = origHTML;
+                    btnDownloadPDF.disabled = false;
+                    feather.replace();
+                }
+            });
+        }
+
+        // 7. Make sidebar user profile clickable to go to Settings
+        const sidebarProfile = document.querySelector('.user-profile');
+        if (sidebarProfile) {
+            sidebarProfile.style.cursor = 'pointer';
+            sidebarProfile.addEventListener('click', () => {
+                window.location.hash = '#admin-settings';
+            });
+        }
+    }
+
+    function updateAdminSelfIDCard() {
+        const idCardName = document.getElementById('adminSelfIdCardName');
+        const idCardDesignation = document.getElementById('adminSelfIdCardDesignation');
+        const idCardEmpId = document.getElementById('adminSelfIdCardEmpId');
+        const idCardDept = document.getElementById('adminSelfIdCardDept');
+        const idCardGender = document.getElementById('adminSelfIdCardGender');
+        const idCardPhone = document.getElementById('adminSelfIdCardPhone');
+        const idCardAvatar = document.getElementById('adminSelfIdCardAvatar');
+        const idCardBarcodeText = document.getElementById('adminSelfIdCardBarcodeText');
+        const idCardQR = document.getElementById('adminSelfIdCardQR');
+
+        // Back Card Elements
+        const idCardJoinDate = document.getElementById('adminSelfIdCardJoinDate');
+        const idCardExpiryDate = document.getElementById('adminSelfIdCardExpiryDate');
+        const idCardEmergencyContact = document.getElementById('adminSelfIdCardEmergencyContact');
+        const idCardSignature = document.getElementById('adminSelfIdCardSignature');
+        const idCardBloodGroup = document.getElementById('adminSelfIdCardBloodGroup');
+
+        if (idCardName) idCardName.textContent = adminProfile.name || 'Admin Name';
+        if (idCardDesignation) idCardDesignation.textContent = adminProfile.designation || 'Designation';
+        if (idCardEmpId) idCardEmpId.textContent = adminProfile.employeeId || 'HM-0000';
+        if (idCardDept) idCardDept.textContent = adminProfile.department || 'Unassigned';
+        if (idCardGender) {
+            const genderLabel = {
+                'female': 'Female',
+                'male': 'Male',
+                'other': 'Other',
+                'prefer_not': 'Other'
+            }[adminProfile.gender] || adminProfile.gender || 'Other';
+            idCardGender.textContent = genderLabel;
+        }
+        if (idCardPhone) idCardPhone.textContent = adminProfile.phone || '-';
+        if (idCardAvatar) idCardAvatar.src = adminProfile.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(adminProfile.name || 'Admin')}&background=4F46E5&color=fff`;
+        if (idCardBarcodeText) idCardBarcodeText.textContent = adminProfile.employeeId || 'HM0000';
+
+        // QR Code API Integration
+        if (idCardQR) {
+            const qrData = encodeURIComponent(`ID: ${adminProfile.employeeId || 'HM-0000'}\nName: ${adminProfile.name || 'Admin'}\nDept: ${adminProfile.department || 'Unassigned'}\nPhone: ${adminProfile.phone || '-'}`);
+            idCardQR.src = `https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=${qrData}`;
+        }
+
+        // Back Card
+        if (idCardJoinDate) {
+            const jd = adminProfile.joinDate || adminProfile.createdAt;
+            idCardJoinDate.textContent = jd ? new Date(jd).toLocaleDateString('en-GB') : '-';
+        }
+        if (idCardExpiryDate) {
+            let ed = adminProfile.expiryDate;
+            if (!ed) {
+                const jd = adminProfile.joinDate || adminProfile.createdAt;
+                if (jd) {
+                    const jdObj = new Date(jd);
+                    ed = new Date(jdObj.setFullYear(jdObj.getFullYear() + 5)).toISOString();
+                }
+            }
+            idCardExpiryDate.textContent = ed ? new Date(ed).toLocaleDateString('en-GB') : '-';
+        }
+        if (idCardEmergencyContact) idCardEmergencyContact.textContent = adminProfile.emergencyContact || '-';
+        if (idCardSignature) idCardSignature.textContent = adminProfile.name || 'Admin Signature';
+        if (idCardBloodGroup) idCardBloodGroup.textContent = adminProfile.bloodGroup || '-';
     }
 
     // Duplicate mobile menu responsiveness and DOMContentLoaded closing brace removed

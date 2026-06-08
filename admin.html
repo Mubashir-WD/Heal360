@@ -125,6 +125,8 @@
                         data-feather="calendar"></i> Company Calendar</a>
 
                 <div class="nav-label mt-auto">SYSTEM</div>
+                <a href="#admin-settings" class="nav-item nav-link" data-target="view-admin-settings"><i
+                        data-feather="settings"></i> Profile Settings</a>
                 <a href="index.html" class="nav-item"><i data-feather="monitor"></i> Employee Portal</a>
             </nav>
 
@@ -455,6 +457,232 @@
                                     </table>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW: SETTINGS -->
+            <div id="view-admin-settings" class="view-section" style="display: none;">
+                <div class="profile-grid">
+                    <!-- Left: Form Card -->
+                    <div class="card settings-card">
+                        <div class="card-header border-bottom">
+                            <h2 class="card-title">Profile Settings</h2>
+                        </div>
+                        <div class="card-body">
+                            <form id="adminSettingsForm">
+                                <div class="profile-upload-group">
+                                    <img src="" alt="Profile" class="avatar-lg" id="adminSettingsAvatarPreview">
+                                    <div class="upload-actions">
+                                        <label for="adminProfileUpload" class="btn btn-secondary btn-sm">Change Picture</label>
+                                        <input type="file" id="adminProfileUpload" accept="image/*" style="display: none;">
+                                        <p class="help-text">JPG, GIF or PNG. Max size of 800K</p>
+                                    </div>
+                                </div>
+
+                                <h3 class="subsection-title">Personal Information</h3>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Full Name</label>
+                                        <input type="text" id="adminSettingsName" required class="form-control">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Employee ID</label>
+                                        <input type="text" id="adminSettingsEmpId" readonly style="background-color: #F1F5F9; color: #64748B; cursor: not-allowed;" class="form-control" placeholder="Assigned by Admin">
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Email Address</label>
+                                        <input type="email" id="adminSettingsEmail" required class="form-control">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Phone Number</label>
+                                        <input type="tel" id="adminSettingsPhone" class="form-control" placeholder="+91 98765 43210">
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Job Title / Designation</label>
+                                        <input type="text" id="adminSettingsDesignation" class="form-control" placeholder="e.g. CEO / Director">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Department</label>
+                                        <input type="text" id="adminSettingsDepartment" class="form-control" placeholder="e.g. Management">
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Date of Birth</label>
+                                        <input type="date" id="adminSettingsDob" class="form-control">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Gender</label>
+                                        <div class="select-wrapper">
+                                            <select id="adminSettingsGender" class="form-control">
+                                                <option value="female">Female</option>
+                                                <option value="male">Male</option>
+                                                <option value="other">Other</option>
+                                                <option value="prefer_not">Prefer not to say</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Emergency Contact</label>
+                                        <input type="tel" id="adminSettingsEmergencyContact" class="form-control" placeholder="+91 98765 43210">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Blood Group</label>
+                                        <div class="select-wrapper">
+                                            <select id="adminSettingsBloodGroup" class="form-control">
+                                                <option value="">Select Blood Group</option>
+                                                <option value="A+">A+</option>
+                                                <option value="A-">A-</option>
+                                                <option value="B+">B+</option>
+                                                <option value="B-">B-</option>
+                                                <option value="AB+">AB+</option>
+                                                <option value="AB-">AB-</option>
+                                                <option value="O+">O+</option>
+                                                <option value="O-">O-</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-actions mt-4 text-right">
+                                    <button type="submit" class="btn btn-primary" id="adminSettingsSubmitBtn"><i data-feather="save"></i> Save Changes</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Right: Digital ID Card Card -->
+                    <div class="card id-card-preview-card" style="display: flex; flex-direction: column; align-items: center; padding: 24px;">
+                        <div class="id-card-preview-header-row" style="width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <h2 class="card-title" style="margin: 0;">Digital Employee ID Card</h2>
+                            <!-- Switcher controls -->
+                            <div class="id-card-switcher">
+                                <button type="button" class="switcher-btn active" id="adminSelfBtnShowFront">Front</button>
+                                <button type="button" class="switcher-btn" id="adminSelfBtnShowBack">Back</button>
+                                <button type="button" class="switcher-btn" id="adminSelfBtnShowSheet">Print</button>
+                            </div>
+                        </div>
+
+                        <div class="id-card-wrapper" style="transform: scale(0.95); margin: 0 auto;">
+                            <div class="id-card-container preview-front" id="adminSelfIdCardContainer">
+                                <!-- FRONT CARD -->
+                                <div class="id-card id-card-front" id="adminSelfIdCardFront">
+                                    <div class="id-card-bg-gradient-top"></div>
+                                    <div class="id-card-bg-gradient-bottom"></div>
+                                    
+                                    <div class="id-card-header">
+                                        <img src="assets/logo.png" alt="Homesly stays HRM Logo" class="id-card-logo">
+                                        <span class="id-card-badge id-card-badge-active">ACTIVE</span>
+                                    </div>
+                                    
+                                    <div class="id-card-avatar-container">
+                                        <div class="id-card-avatar-ring">
+                                            <img src="https://ui-avatars.com/api/?name=Admin&background=4F46E5&color=fff" alt="ID Profile" class="id-card-avatar" id="adminSelfIdCardAvatar">
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="id-card-info">
+                                        <div class="id-card-name" id="adminSelfIdCardName">Admin Name</div>
+                                        <div class="id-card-title" id="adminSelfIdCardDesignation">Designation</div>
+                                    </div>
+                                    
+                                    <div class="id-card-details">
+                                        <div class="id-card-detail-item">
+                                            <span class="id-card-detail-label">ID Number</span>
+                                            <span class="id-card-detail-value" id="adminSelfIdCardEmpId">HM-0000</span>
+                                        </div>
+                                        <div class="id-card-detail-item">
+                                            <span class="id-card-detail-label">Department</span>
+                                            <span class="id-card-detail-value" id="adminSelfIdCardDept">Unassigned</span>
+                                        </div>
+                                        <div class="id-card-detail-item">
+                                            <span class="id-card-detail-label">Gender</span>
+                                            <span class="id-card-detail-value" id="adminSelfIdCardGender">Other</span>
+                                        </div>
+                                        <div class="id-card-detail-item">
+                                            <span class="id-card-detail-label">Blood Group</span>
+                                            <span class="id-card-detail-value" id="adminSelfIdCardBloodGroup">-</span>
+                                        </div>
+                                        <div class="id-card-detail-item" style="grid-column: span 2;">
+                                            <span class="id-card-detail-label">Phone</span>
+                                            <span class="id-card-detail-value" id="adminSelfIdCardPhone">-</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="id-card-footer">
+                                        <div class="id-card-qr-box">
+                                            <img src="" alt="QR Code" class="id-card-qr" id="adminSelfIdCardQR">
+                                        </div>
+                                        <div class="id-card-barcode-box">
+                                            <div class="id-card-barcode"></div>
+                                            <span class="id-card-barcode-text" id="adminSelfIdCardBarcodeText">HM0000</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- BACK CARD -->
+                                <div class="id-card id-card-back" id="adminSelfIdCardBack">
+                                    <div class="id-card-bg-gradient-top"></div>
+                                    <div class="id-card-bg-gradient-bottom"></div>
+                                    
+                                    <div class="id-card-header-back">
+                                        <h3 class="id-card-back-title">TERMS & CONDITIONS</h3>
+                                    </div>
+                                    
+                                    <div class="id-card-tc-content">
+                                        <ul class="tc-list">
+                                            <li>This card is the property of Homesly stays HRM. If found, please return to human resources.</li>
+                                            <li>The cardholder is responsible for the custody of this card.</li>
+                                            <li>Use of this card is subject to company policies and guidelines.</li>
+                                        </ul>
+                                    </div>
+                                    
+                                    <div class="id-card-back-details">
+                                        <div class="id-card-detail-item">
+                                            <span class="id-card-detail-label">Join Date</span>
+                                            <span class="id-card-detail-value" id="adminSelfIdCardJoinDate">-</span>
+                                        </div>
+                                        <div class="id-card-detail-item">
+                                            <span class="id-card-detail-label">Valid Till</span>
+                                            <span class="id-card-detail-value" id="adminSelfIdCardExpiryDate">-</span>
+                                        </div>
+                                        <div class="id-card-detail-item" style="grid-column: span 2;">
+                                            <span class="id-card-detail-label">Emergency Contact</span>
+                                            <span class="id-card-detail-value" id="adminSelfIdCardEmergencyContact">-</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="id-card-signature-area">
+                                        <div class="signature-line">
+                                            <span class="signature-text" id="adminSelfIdCardSignature">Admin Signature</span>
+                                        </div>
+                                        <span class="signature-label">Authorized Signature</span>
+                                    </div>
+                                    
+                                    <div class="id-card-footer-back">
+                                        <p class="company-website">homeslystays.com</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Card Actions -->
+                        <div style="margin-top: 20px; display: flex; gap: 12px; width: 100%;">
+                            <button type="button" class="btn btn-primary" id="adminSelfBtnDownloadPDF" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                <i data-feather="download"></i> Download ID PDF
+                            </button>
                         </div>
                     </div>
                 </div>
