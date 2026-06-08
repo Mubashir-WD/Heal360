@@ -286,6 +286,12 @@ import {
             appState.attendance.isClockedIn = false;
             appState.attendance.activeDocId = null;
 
+            let totalWorkingSeconds = 0;
+            let lateInCount = 0;
+            let earlyInCount = 0;
+            let lateOutCount = 0;
+            let earlyOutCount = 0;
+
             allLogs.forEach((data) => {
                 if (data.clockOutTime === null) {
                     appState.attendance.activeDocId = data.id;
@@ -300,11 +306,22 @@ import {
                     const outDate = new Date(data.clockOutTime);
                     const timeOpts = { hour: '2-digit', minute: '2-digit', ...gmtFormat };
 
-                    const hours = Math.floor(data.totalSeconds / 3600);
-                    const minutes = Math.floor((data.totalSeconds % 3600) / 60);
+                    let secs = data.totalSeconds || 0;
+                    if (secs > 16 * 3600) {
+                        secs = 8 * 3600; // Cap shift at 8 hours if elapsed > 16 hours
+                    }
+                    totalWorkingSeconds += secs;
+
+                    if (data.lateClockIn) lateInCount++;
+                    if (data.earlyClockIn) earlyInCount++;
+                    if (data.lateClockOut) lateOutCount++;
+                    if (data.earlyClockOut) earlyOutCount++;
+
+                    const hours = Math.floor(secs / 3600);
+                    const minutes = Math.floor((secs % 3600) / 60);
 
                     appState.attendance.history.push({
-                        date: outDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', ...gmtFormat }),
+                        date: inDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', ...gmtFormat }),
                         in: inDate.toLocaleTimeString('en-GB', timeOpts),
                         out: outDate.toLocaleTimeString('en-GB', timeOpts),
                         total: `${hours}h ${minutes}m`,
@@ -318,6 +335,23 @@ import {
                     });
                 }
             });
+
+            // Update stats DOM
+            const hWorkingHours = Math.floor(totalWorkingSeconds / 3600);
+            const mWorkingMins = Math.floor((totalWorkingSeconds % 3600) / 60);
+
+            const elWorkingHours = document.getElementById('empStatWorkingHours');
+            const elLateIn = document.getElementById('empStatLateIn');
+            const elEarlyIn = document.getElementById('empStatEarlyIn');
+            const elLateOut = document.getElementById('empStatLateOut');
+            const elEarlyOut = document.getElementById('empStatEarlyOut');
+
+            if (elWorkingHours) elWorkingHours.textContent = `${hWorkingHours}h ${mWorkingMins}m`;
+            if (elLateIn) elLateIn.textContent = lateInCount;
+            if (elEarlyIn) elEarlyIn.textContent = earlyInCount;
+            if (elLateOut) elLateOut.textContent = lateOutCount;
+            if (elEarlyOut) elEarlyOut.textContent = earlyOutCount;
+
             renderAttendanceState();
         }, (err) => {
             console.error("Attendance logs listener failed:", err);
@@ -565,7 +599,10 @@ import {
                 // FIXED: Calculate Absolute Time Diff directly to fix sync issues across midnight/browser hibernation defaults
                 const absoluteNow = new Date(endTime).getTime();
                 const absoluteStart = new Date(appState.attendance.clockInTime).getTime();
-                const hardTotalSeconds = Math.floor((absoluteNow - absoluteStart) / 1000);
+                let hardTotalSeconds = Math.floor((absoluteNow - absoluteStart) / 1000);
+                if (hardTotalSeconds > 16 * 3600) {
+                    hardTotalSeconds = 8 * 3600; // Cap shift at 8 hours if elapsed > 16 hours
+                }
 
                 const outDateObj = new Date(endTime);
                 const outHour = parseInt(outDateObj.toLocaleTimeString('en-GB', { hour: 'numeric', hour12: false, timeZone: 'Europe/London' }));
@@ -604,7 +641,7 @@ import {
                 const finalHoursStr = `${hours}h ${minutes}m`;
 
                 appState.attendance.history.unshift({
-                    date: outDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', ...gmtFormat }),
+                    date: inDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', ...gmtFormat }),
                     in: inDate.toLocaleTimeString('en-GB', timeOpts),
                     out: outDate.toLocaleTimeString('en-GB', timeOpts),
                     total: finalHoursStr,
@@ -1167,6 +1204,7 @@ import {
 
     // --- CALENDAR SYSTEM ---
     let calendarCurrentDate = new Date();
+    let calendarViewMode = 'month'; // 'month', 'week', 'year'
     let calendarEvents = [];
     let employeeApprovedLeaves = [];
     
@@ -1187,7 +1225,7 @@ import {
         });
         
         const leavesRef = collection(db, "leave_requests");
-        const q = query(leavesRef, where("status", "==", "Approved"));
+        const q = query(leavesRef, where("userId", "==", CURRENT_USER_ID), where("status", "==", "Approved"));
         onSnapshot(q, (leavesSnap) => {
             try {
                 employeeApprovedLeaves = [];
@@ -1252,13 +1290,27 @@ import {
         const monthTitle = document.getElementById('calendarMonthTitle');
         if (!grid || !monthTitle) return;
         
+        grid.innerHTML = "";
+        
+        if (calendarViewMode === 'year') {
+            renderCalendarYear(grid, monthTitle);
+        } else if (calendarViewMode === 'week') {
+            renderCalendarWeek(grid, monthTitle);
+        } else {
+            renderCalendarMonth(grid, monthTitle);
+        }
+    }
+
+    function renderCalendarMonth(grid, monthTitle) {
+        grid.style.display = 'grid';
+        grid.style.gridTemplateColumns = 'repeat(7, 1fr)';
+        grid.style.gap = '8px';
+
         const year = calendarCurrentDate.getFullYear();
         const month = calendarCurrentDate.getMonth();
         
         const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
         monthTitle.textContent = `${monthNames[month]} ${year}`;
-        
-        grid.innerHTML = "";
         
         const dayHeaders = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
         dayHeaders.forEach(day => {
@@ -1315,12 +1367,10 @@ import {
                 end.setHours(0,0,0,0);
                 
                 if (cellDate >= start && cellDate <= end) {
-                    const emp = usersMap[leave.userId] || { name: "Staff" };
-                    const label = leave.userId === CURRENT_USER_ID ? "My Leave" : `${emp.name} (Leave)`;
                     const el = document.createElement('div');
                     el.className = "calendar-event event-leave";
-                    el.textContent = label;
-                    el.title = `${emp.name}: ${leave.startDate} to ${leave.endDate}`;
+                    el.textContent = "My Leave";
+                    el.title = `My Leave: ${leave.startDate} to ${leave.endDate}`;
                     eventsContainer.appendChild(el);
                 }
             });
@@ -1330,17 +1380,238 @@ import {
         }
     }
 
+    function renderCalendarWeek(grid, monthTitle) {
+        grid.style.display = 'grid';
+        grid.style.gridTemplateColumns = 'repeat(7, 1fr)';
+        grid.style.gap = '8px';
+
+        const dayHeaders = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+        dayHeaders.forEach(day => {
+            const h = document.createElement('div');
+            h.className = "calendar-day-header";
+            h.textContent = day;
+            grid.appendChild(h);
+        });
+
+        const today = new Date();
+        const curr = new Date(calendarCurrentDate);
+        const day = curr.getDay();
+        const startOfWeek = new Date(curr);
+        startOfWeek.setDate(curr.getDate() - day);
+
+        const endOfWeek = new Date(startOfWeek);
+        endOfWeek.setDate(startOfWeek.getDate() + 6);
+
+        const startStr = startOfWeek.toLocaleDateString('en-GB', { month: 'short', day: 'numeric' });
+        const endStr = endOfWeek.toLocaleDateString('en-GB', { month: 'short', day: 'numeric', year: 'numeric' });
+        monthTitle.textContent = `Week of ${startStr} - ${endStr}`;
+
+        for (let i = 0; i < 7; i++) {
+            const cellDate = new Date(startOfWeek);
+            cellDate.setDate(startOfWeek.getDate() + i);
+
+            const y = cellDate.getFullYear();
+            const m = cellDate.getMonth();
+            const d = cellDate.getDate();
+
+            const cellDateStr = `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+
+            const cell = document.createElement('div');
+            cell.className = "calendar-day";
+            cell.style.minHeight = "120px";
+            
+            if (y === today.getFullYear() && m === today.getMonth() && d === today.getDate()) {
+                cell.classList.add('today');
+            }
+            
+            const numSpan = document.createElement('span');
+            numSpan.className = "calendar-day-num";
+            numSpan.textContent = d;
+            cell.appendChild(numSpan);
+            
+            const eventsContainer = document.createElement('div');
+            eventsContainer.className = "calendar-events-container";
+            eventsContainer.style.maxHeight = "90px";
+            
+            calendarEvents.forEach(evt => {
+                if (evt.date === cellDateStr) {
+                    const el = document.createElement('div');
+                    el.className = `calendar-event event-${evt.type}`;
+                    el.textContent = evt.title;
+                    el.title = `${evt.title} (${evt.type.replace('_', ' ')})`;
+                    eventsContainer.appendChild(el);
+                }
+            });
+            
+            employeeApprovedLeaves.forEach(leave => {
+                const start = new Date(leave.startDate);
+                const end = new Date(leave.endDate);
+                cellDate.setHours(0,0,0,0);
+                start.setHours(0,0,0,0);
+                end.setHours(0,0,0,0);
+                
+                if (cellDate >= start && cellDate <= end) {
+                    const el = document.createElement('div');
+                    el.className = "calendar-event event-leave";
+                    el.textContent = "My Leave";
+                    el.title = `My Leave: ${leave.startDate} to ${leave.endDate}`;
+                    eventsContainer.appendChild(el);
+                }
+            });
+            
+            cell.appendChild(eventsContainer);
+            grid.appendChild(cell);
+        }
+    }
+
+    function renderCalendarYear(grid, monthTitle) {
+        const year = calendarCurrentDate.getFullYear();
+        monthTitle.textContent = `Year ${year}`;
+        
+        grid.style.display = 'grid';
+        grid.style.gridTemplateColumns = 'repeat(auto-fit, minmax(210px, 1fr))';
+        grid.style.gap = '20px';
+
+        const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        const today = new Date();
+
+        for (let m = 0; m < 12; m++) {
+            const card = document.createElement('div');
+            card.className = "mini-month-card";
+            card.style.cssText = "border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 12px; background: white; display: flex; flex-direction: column; gap: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.02);";
+
+            const title = document.createElement('h4');
+            title.textContent = monthNames[m];
+            title.style.cssText = "font-size: 0.85rem; font-weight: 700; color: #1E293B; margin: 0; text-align: center; border-bottom: 1px solid var(--border-color); padding-bottom: 4px;";
+            card.appendChild(title);
+
+            const miniGrid = document.createElement('div');
+            miniGrid.className = "mini-month-grid";
+            miniGrid.style.cssText = "display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px;";
+
+            const dayHeaders = ["S", "M", "T", "W", "T", "F", "S"];
+            dayHeaders.forEach(dh => {
+                const headerCell = document.createElement('div');
+                headerCell.textContent = dh;
+                headerCell.style.cssText = "font-size: 0.6rem; font-weight: 700; color: #94A3B8; text-align: center; padding: 2px 0;";
+                miniGrid.appendChild(headerCell);
+            });
+
+            const firstDay = new Date(year, m, 1).getDay();
+            const totalDays = new Date(year, m + 1, 0).getDate();
+
+            for (let i = 0; i < firstDay; i++) {
+                const empty = document.createElement('div');
+                miniGrid.appendChild(empty);
+            }
+
+            for (let d = 1; d <= totalDays; d++) {
+                const cellDate = new Date(year, m, d);
+                const cellDateStr = `${year}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+
+                const dayCell = document.createElement('div');
+                dayCell.textContent = d;
+                dayCell.style.cssText = "font-size: 0.65rem; font-weight: 600; color: #475569; text-align: center; padding: 3px 0; border-radius: 4px; display: flex; align-items: center; justify-content: center; aspect-ratio: 1; cursor: pointer;";
+
+                if (year === today.getFullYear() && m === today.getMonth() && d === today.getDate()) {
+                    dayCell.style.border = "1.5px solid #4F46E5";
+                    dayCell.style.color = "#4F46E5";
+                }
+
+                let eventType = null;
+                let eventTitle = "";
+                calendarEvents.forEach(evt => {
+                    if (evt.date === cellDateStr) {
+                        eventType = evt.type;
+                        eventTitle = evt.title;
+                    }
+                });
+
+                employeeApprovedLeaves.forEach(leave => {
+                    const start = new Date(leave.startDate);
+                    const end = new Date(leave.endDate);
+                    cellDate.setHours(0,0,0,0);
+                    start.setHours(0,0,0,0);
+                    end.setHours(0,0,0,0);
+                    
+                    if (cellDate >= start && cellDate <= end) {
+                        eventType = "leave";
+                        eventTitle = "My Leave";
+                    }
+                });
+
+                if (eventType) {
+                    dayCell.title = eventTitle;
+                    if (eventType === 'public_holiday') {
+                        dayCell.style.background = "#E0F2FE";
+                        dayCell.style.color = "#0369A1";
+                    } else if (eventType === 'festival_holiday') {
+                        dayCell.style.background = "#F3E8FF";
+                        dayCell.style.color = "#6B21A8";
+                    } else if (eventType === 'company_holiday') {
+                        dayCell.style.background = "#E0E7FF";
+                        dayCell.style.color = "#3730A3";
+                    } else if (eventType === 'leave') {
+                        dayCell.style.background = "#D1FAE5";
+                        dayCell.style.color = "#065F46";
+                    } else if (eventType === 'team_event') {
+                        dayCell.style.background = "#FEF3C7";
+                        dayCell.style.color = "#92400E";
+                    } else if (eventType === 'important_date') {
+                        dayCell.style.background = "#FFE4E6";
+                        dayCell.style.color = "#9F1239";
+                    }
+                }
+
+                miniGrid.appendChild(dayCell);
+            }
+
+            card.appendChild(miniGrid);
+            grid.appendChild(card);
+        }
+    }
+
     const btnPrevMonth = document.getElementById('btnPrevMonth');
     const btnNextMonth = document.getElementById('btnNextMonth');
     if (btnPrevMonth) {
         btnPrevMonth.addEventListener('click', () => {
-            calendarCurrentDate.setMonth(calendarCurrentDate.getMonth() - 1);
+            if (calendarViewMode === 'week') {
+                calendarCurrentDate.setDate(calendarCurrentDate.getDate() - 7);
+            } else if (calendarViewMode === 'year') {
+                calendarCurrentDate.setFullYear(calendarCurrentDate.getFullYear() - 1);
+            } else {
+                calendarCurrentDate.setMonth(calendarCurrentDate.getMonth() - 1);
+            }
             renderCalendar();
         });
     }
     if (btnNextMonth) {
         btnNextMonth.addEventListener('click', () => {
-            calendarCurrentDate.setMonth(calendarCurrentDate.getMonth() + 1);
+            if (calendarViewMode === 'week') {
+                calendarCurrentDate.setDate(calendarCurrentDate.getDate() + 7);
+            } else if (calendarViewMode === 'year') {
+                calendarCurrentDate.setFullYear(calendarCurrentDate.getFullYear() + 1);
+            } else {
+                calendarCurrentDate.setMonth(calendarCurrentDate.getMonth() + 1);
+            }
             renderCalendar();
+        });
+    }
+
+    // Switcher bindings
+    const calViewSwitcher = document.getElementById('calendarViewSwitcher');
+    if (calViewSwitcher) {
+        const btns = calViewSwitcher.querySelectorAll('button');
+        btns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                btns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                if (btn.id === 'btnCalendarViewMonth') calendarViewMode = 'month';
+                if (btn.id === 'btnCalendarViewWeek') calendarViewMode = 'week';
+                if (btn.id === 'btnCalendarViewYear') calendarViewMode = 'year';
+                
+                renderCalendar();
+            });
         });
     }

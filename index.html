@@ -106,6 +106,30 @@
                             </div>
                         </div>
 
+                        <!-- Attendance Statistics Cards -->
+                        <div class="stats-grid-employee" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 16px; margin-bottom: 24px;">
+                            <div class="card stat-mini-card" style="padding: 16px; display: flex; flex-direction: column; gap: 8px;">
+                                <span style="font-size: 0.7rem; color: var(--text-secondary); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Working Hours</span>
+                                <span id="empStatWorkingHours" style="font-size: 1.15rem; font-weight: 700; color: var(--primary);">0h 0m</span>
+                            </div>
+                            <div class="card stat-mini-card" style="padding: 16px; display: flex; flex-direction: column; gap: 8px;">
+                                <span style="font-size: 0.7rem; color: var(--text-secondary); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Late Logins</span>
+                                <span id="empStatLateIn" style="font-size: 1.15rem; font-weight: 700; color: #D97706;">0</span>
+                            </div>
+                            <div class="card stat-mini-card" style="padding: 16px; display: flex; flex-direction: column; gap: 8px;">
+                                <span style="font-size: 0.7rem; color: var(--text-secondary); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Early Logins</span>
+                                <span id="empStatEarlyIn" style="font-size: 1.15rem; font-weight: 700; color: #166534;">0</span>
+                            </div>
+                            <div class="card stat-mini-card" style="padding: 16px; display: flex; flex-direction: column; gap: 8px;">
+                                <span style="font-size: 0.7rem; color: var(--text-secondary); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Late Clock Out</span>
+                                <span id="empStatLateOut" style="font-size: 1.15rem; font-weight: 700; color: #0284C7;">0</span>
+                            </div>
+                            <div class="card stat-mini-card" style="padding: 16px; display: flex; flex-direction: column; gap: 8px;">
+                                <span style="font-size: 0.7rem; color: var(--text-secondary); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Early Clock Out</span>
+                                <span id="empStatEarlyOut" style="font-size: 1.15rem; font-weight: 700; color: #E11D48;">0</span>
+                            </div>
+                        </div>
+
                         <!-- Attendance History Preview -->
                         <div class="card history-card">
                             <div class="card-header border-bottom">
@@ -264,10 +288,17 @@
                     </div>
                     <div class="card-body">
                         <div class="calendar-wrapper">
-                            <div class="calendar-header-row">
-                                <button class="calendar-nav-btn" id="btnPrevMonth"><i data-feather="chevron-left" style="width:14px; height:14px;"></i> Previous</button>
-                                <h2 class="calendar-month-title" id="calendarMonthTitle">June 2026</h2>
-                                <button class="calendar-nav-btn" id="btnNextMonth">Next <i data-feather="chevron-right" style="width:14px; height:14px;"></i></button>
+                            <div class="calendar-header-row" style="display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap;">
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <button class="calendar-nav-btn" id="btnPrevMonth"><i data-feather="chevron-left" style="width:14px; height:14px;"></i> Previous</button>
+                                    <h2 class="calendar-month-title" id="calendarMonthTitle" style="min-width: 140px; text-align: center;">June 2026</h2>
+                                    <button class="calendar-nav-btn" id="btnNextMonth">Next <i data-feather="chevron-right" style="width:14px; height:14px;"></i></button>
+                                </div>
+                                <div class="id-card-switcher" id="calendarViewSwitcher" style="margin-left: auto;">
+                                    <button type="button" class="switcher-btn active" id="btnCalendarViewMonth">Month</button>
+                                    <button type="button" class="switcher-btn" id="btnCalendarViewWeek">Week</button>
+                                    <button type="button" class="switcher-btn" id="btnCalendarViewYear">Year</button>
+                                </div>
                             </div>
                             <div class="calendar-grid" id="calendarGrid">
                                 <!-- Populated dynamically by JS -->

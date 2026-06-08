@@ -261,6 +261,28 @@
         max-width: 100% !important;
         border-radius: var(--radius-md) !important;
     }
+
+    /* Stats grid responsiveness */
+    .stats-grid-employee {
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)) !important;
+        gap: 12px !important;
+    }
+    .stats-grid-admin {
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)) !important;
+        gap: 12px !important;
+    }
+
+    /* Modals scrollability on mobile */
+    .modal-overlay {
+        align-items: flex-start !important;
+        overflow-y: auto !important;
+        padding: 20px 10px !important;
+    }
+    .modal-card {
+        margin-top: auto;
+        margin-bottom: auto;
+        max-height: none !important;
+    }
 }
 
 /* ==========================================================================
@@ -268,8 +290,14 @@
    ========================================================================== */
 @media (max-width: 480px) {
     /* Scale the ID card proportionally to prevent overflow and cropping */
+    .id-card-preview-card {
+        padding: 12px !important;
+        width: 100% !important;
+        box-sizing: border-box;
+    }
+
     .id-card-wrapper {
-        overflow: visible;
+        overflow: hidden !important;
         display: flex;
         justify-content: center;
         width: 100%;
@@ -295,8 +323,25 @@
     .id-card {
         transform: scale(0.9);
         transform-origin: center top;
+        margin-left: -16px !important;
+        margin-right: -16px !important;
         margin-bottom: -50px; /* Offset the space lost by scaling down */
         box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08) !important;
+    }
+
+    /* Stats grids stack symmetrical 2x2 with last span */
+    .stats-grid-employee,
+    .stats-grid-admin {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 10px !important;
+    }
+    .stats-grid-employee > *:last-child,
+    .stats-grid-admin > *:last-child {
+        grid-column: span 2;
+    }
+    .stats-grid-employee > .card,
+    .stats-grid-admin > .admin-stat-card {
+        padding: 12px !important;
     }
 }
 
@@ -304,6 +349,8 @@
     .id-card {
         transform: scale(0.8);
         transform-origin: center top;
+        margin-left: -32px !important;
+        margin-right: -32px !important;
         margin-bottom: -100px;
     }
 }
@@ -312,6 +359,8 @@
     .id-card {
         transform: scale(0.72);
         transform-origin: center top;
+        margin-left: -45px !important;
+        margin-right: -45px !important;
         margin-bottom: -140px;
     }
 }

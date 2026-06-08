@@ -652,6 +652,10 @@ textarea {
     gap: 20px;
 }
 
+.form-row.three-col {
+    grid-template-columns: repeat(3, 1fr);
+}
+
 @media (max-width: 1024px) {
     .dashboard-grid, .profile-grid {
         grid-template-columns: 1fr;

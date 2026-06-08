@@ -31,6 +31,11 @@ const secondaryAuth = getAuth(secondaryApp);
 
     const gmtFormat = { timeZone: 'Europe/London' };
 
+    function cleanName(name) {
+        if (!name) return "";
+        return name.replace(/\s*\([^)]*\)/g, '').trim();
+    }
+
     // --- SECURITY GATEWAY & PROFILE FETCH ---
     onAuthStateChanged(auth, async (user) => {
         if (user) {
@@ -146,7 +151,7 @@ const secondaryAuth = getAuth(secondaryApp);
         if (nameEl && adminProfile) nameEl.textContent = adminProfile.name || 'HR Administrator';
         if (roleEl && adminProfile) {
             const roleLabels = {
-                'team_lead': 'Team Lead / Dept Admin',
+                'team_lead': 'Team Lead',
                 'hr_admin': 'HR Administrator',
                 'super_admin': 'Super Administrator'
             };
@@ -156,10 +161,31 @@ const secondaryAuth = getAuth(secondaryApp);
             avatarEl.src = adminProfile.avatar;
         }
 
-        // Hide Departments tab for Team Leads
+        // Team Lead Restrictions
         if (adminProfile && adminProfile.role === 'team_lead') {
+            // Hide Departments tab
             const deptLink = document.querySelector('a[href="#admin-departments"]');
             if (deptLink) deptLink.style.display = 'none';
+
+            // Hide Add Employee button
+            const addEmpBtn = document.getElementById('addEmployeeBtn');
+            if (addEmpBtn) addEmpBtn.style.display = 'none';
+
+            // Hide Add Department button
+            const addDeptBtn = document.getElementById('addDepartmentBtn');
+            if (addDeptBtn) addDeptBtn.style.display = 'none';
+
+            // Hide notice creation card and expand notice board list to full width
+            const createNoticeCard = document.getElementById('adminCreateNoticeCard');
+            if (createNoticeCard) createNoticeCard.style.display = 'none';
+            const noticesGrid = document.querySelector('#view-admin-notices .profile-grid');
+            if (noticesGrid) noticesGrid.style.gridTemplateColumns = '1fr';
+
+            // Hide calendar event creation card and expand calendar to full width
+            const createEventCard = document.getElementById('adminCreateEventCard');
+            if (createEventCard) createEventCard.style.display = 'none';
+            const calendarGrid = document.querySelector('#view-admin-calendar .profile-grid');
+            if (calendarGrid) calendarGrid.style.gridTemplateColumns = '1fr';
         }
 
         // Hide Employee Portal link for Super Admin (CEO)
@@ -263,6 +289,12 @@ const secondaryAuth = getAuth(secondaryApp);
         let metricLateCount = 0;
         let tableHTML = "";
 
+        let totalWorkingSeconds = 0;
+        let lateInCount = 0;
+        let earlyInCount = 0;
+        let lateOutCount = 0;
+        let earlyOutCount = 0;
+
         const filteredLogs = attendanceLogs.filter(log => {
             const emp = usersMap[log.userId];
             if (!emp) return false;
@@ -272,7 +304,9 @@ const secondaryAuth = getAuth(secondaryApp);
             }
             if (adminProfile.role === 'team_lead') {
                 const isReportingManager = emp.reportingManager === adminProfile.id;
-                const isSameDepartment = emp.department === adminProfile.department;
+                const empDept = (emp.department || "").trim().toLowerCase();
+                const leadDept = (adminProfile.department || "").trim().toLowerCase();
+                const isSameDepartment = empDept !== "" && leadDept !== "" && empDept === leadDept;
                 if (!isReportingManager && !isSameDepartment) {
                     return false;
                 }
@@ -319,6 +353,23 @@ const secondaryAuth = getAuth(secondaryApp);
                     : '<span class="status-pill status-active">Active Shift</span>';
             } else {
                 statusBadge = `<span class="status-pill ${statusClass}">${statusVal}</span>`;
+                const outDateObj = new Date(log.clockOutTime);
+                outTimeStr = outDateObj.toLocaleTimeString('en-GB', timeOpts);
+                
+                let secs = log.totalSeconds || 0;
+                if (secs > 16 * 3600) {
+                    secs = 8 * 3600; // Cap shift at 8 hours if elapsed > 16 hours
+                }
+                totalWorkingSeconds += secs;
+
+                if (log.lateClockIn) lateInCount++;
+                if (log.earlyClockIn) earlyInCount++;
+                if (log.lateClockOut) lateOutCount++;
+                if (log.earlyClockOut) earlyOutCount++;
+
+                const hours = Math.floor(secs / 3600);
+                const minutes = Math.floor((secs % 3600) / 60);
+                totalHoursStr = `${hours}h ${minutes}m`;
             }
 
             const todayStr = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', ...gmtFormat });
@@ -351,6 +402,22 @@ const secondaryAuth = getAuth(secondaryApp);
 
         document.getElementById('metricActiveShifts').textContent = metricActiveShiftsCount;
         document.getElementById('metricLateLogins').textContent = metricLateCount;
+
+        // Update detailed stats grid
+        const adminHHours = Math.floor(totalWorkingSeconds / 3600);
+        const adminMMins = Math.floor((totalWorkingSeconds % 3600) / 60);
+
+        const elAdminWorkingHours = document.getElementById('adminStatWorkingHours');
+        const elAdminLateIn = document.getElementById('adminStatLateIn');
+        const elAdminEarlyIn = document.getElementById('adminStatEarlyIn');
+        const elAdminLateOut = document.getElementById('adminStatLateOut');
+        const elAdminEarlyOut = document.getElementById('adminStatEarlyOut');
+
+        if (elAdminWorkingHours) elAdminWorkingHours.textContent = `${adminHHours}h ${adminMMins}m`;
+        if (elAdminLateIn) elAdminLateIn.textContent = lateInCount;
+        if (elAdminEarlyIn) elAdminEarlyIn.textContent = earlyInCount;
+        if (elAdminLateOut) elAdminLateOut.textContent = lateOutCount;
+        if (elAdminEarlyOut) elAdminEarlyOut.textContent = earlyOutCount;
     }
 
     function renderLeaves() {
@@ -470,7 +537,9 @@ const secondaryAuth = getAuth(secondaryApp);
             }
             if (adminProfile.role === 'team_lead') {
                 const isReportingManager = emp.reportingManager === adminProfile.id;
-                const isSameDepartment = emp.department === adminProfile.department;
+                const empDept = (emp.department || "").trim().toLowerCase();
+                const leadDept = (adminProfile.department || "").trim().toLowerCase();
+                const isSameDepartment = empDept !== "" && leadDept !== "" && empDept === leadDept;
                 if (!isReportingManager && !isSameDepartment) {
                     return false;
                 }
@@ -480,12 +549,12 @@ const secondaryAuth = getAuth(secondaryApp);
 
         for (const emp of filteredEmployees) {
             const mgrName = emp.reportingManager && usersMap[emp.reportingManager] 
-                ? usersMap[emp.reportingManager].name 
+                ? cleanName(usersMap[emp.reportingManager].name) 
                 : "<span style='color:#94A3B8'>None (Top Level)</span>";
 
             const roleLabels = {
                 'employee': 'Employee',
-                'team_lead': 'Team Lead / Dept Admin',
+                'team_lead': 'Team Lead',
                 'hr_admin': 'HR Admin',
                 'super_admin': 'Super Admin'
             };
@@ -656,7 +725,7 @@ const secondaryAuth = getAuth(secondaryApp);
         Object.values(usersMap).forEach(user => {
             if (user.id !== empId && user.role && user.role !== 'employee') {
                 const selected = emp.reportingManager === user.id ? "selected" : "";
-                managerSelect.innerHTML += `<option value="${user.id}" ${selected}>${user.name}</option>`;
+                managerSelect.innerHTML += `<option value="${user.id}" ${selected}>${cleanName(user.name)}</option>`;
             }
         });
 
@@ -712,7 +781,7 @@ const secondaryAuth = getAuth(secondaryApp);
         managerSelect.innerHTML = `<option value="">Select Manager</option>`;
         Object.values(usersMap).forEach(user => {
             if (user.role && user.role !== 'employee') {
-                managerSelect.innerHTML += `<option value="${user.id}">${user.name}</option>`;
+                managerSelect.innerHTML += `<option value="${user.id}">${cleanName(user.name)}</option>`;
             }
         });
 
@@ -1125,10 +1194,12 @@ const secondaryAuth = getAuth(secondaryApp);
                 <td><span class="notice-badge ${badgeClass}">${notice.priority}</span></td>
                 <td>${expDate}</td>
                 <td>
+                    ${adminProfile && adminProfile.role !== 'team_lead' ? `
                     <div style="display:flex; gap:6px;">
                         <button class="btn btn-secondary btn-sm btn-toggle-notice-active" data-id="${notice.id}" data-active="${notice.active !== false}">${toggleText}</button>
                         <button class="btn btn-secondary btn-sm btn-delete-notice" data-id="${notice.id}" style="background:#FEE2E2; color:#991B1B; border-color:#FECACA;"><i data-feather="trash" style="width:12px;"></i></button>
                     </div>
+                    ` : `<span style="color:#94A3B8; font-size:0.8rem;">No Actions</span>`}
                 </td>
             </tr>`;
         });
@@ -1213,6 +1284,7 @@ const secondaryAuth = getAuth(secondaryApp);
     // --- CALENDAR CRUD SYSTEM ---
     let calendarEventsList = [];
     let adminCalendarCurrentDate = new Date();
+    let adminCalendarViewMode = 'month'; // 'month', 'week', 'year'
 
     function renderAdminCalendarEventsTable() {
         const tableBody = document.getElementById('globalCalEventsTable');
@@ -1236,7 +1308,9 @@ const secondaryAuth = getAuth(secondaryApp);
                 </td>
                 <td>${dateStr}</td>
                 <td>
+                    ${adminProfile && adminProfile.role !== 'team_lead' ? `
                     <button class="btn btn-secondary btn-sm btn-delete-cal-event" data-id="${evt.id}" style="background:#FEE2E2; color:#991B1B; border-color:#FECACA;"><i data-feather="trash" style="width:12px;"></i></button>
+                    ` : `<span style="color:#94A3B8; font-size:0.8rem;">No Actions</span>`}
                 </td>
             </tr>`;
         });
@@ -1297,13 +1371,27 @@ const secondaryAuth = getAuth(secondaryApp);
         const monthTitle = document.getElementById('adminCalendarMonthTitle');
         if (!grid || !monthTitle) return;
         
+        grid.innerHTML = "";
+        
+        if (adminCalendarViewMode === 'year') {
+            renderAdminCalendarYear(grid, monthTitle);
+        } else if (adminCalendarViewMode === 'week') {
+            renderAdminCalendarWeek(grid, monthTitle);
+        } else {
+            renderAdminCalendarMonth(grid, monthTitle);
+        }
+    }
+
+    function renderAdminCalendarMonth(grid, monthTitle) {
+        grid.style.display = 'grid';
+        grid.style.gridTemplateColumns = 'repeat(7, 1fr)';
+        grid.style.gap = '8px';
+
         const year = adminCalendarCurrentDate.getFullYear();
         const month = adminCalendarCurrentDate.getMonth();
         
         const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
         monthTitle.textContent = `${monthNames[month]} ${year}`;
-        
-        grid.innerHTML = "";
         
         const dayHeaders = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
         dayHeaders.forEach(day => {
@@ -1323,6 +1411,20 @@ const secondaryAuth = getAuth(secondaryApp);
         }
         
         const today = new Date();
+        const filteredApprovedLeaves = leaveRequests.filter(req => {
+            if (req.status !== "Approved") return false;
+            const emp = usersMap[req.userId];
+            if (!emp) return false;
+            if (adminProfile.role === 'team_lead') {
+                const isReportingManager = emp.reportingManager === adminProfile.id;
+                const isSameDepartment = emp.department === adminProfile.department;
+                if (!isReportingManager && !isSameDepartment) {
+                    return false;
+                }
+            }
+            return true;
+        });
+
         for (let dayNum = 1; dayNum <= totalDays; dayNum++) {
             const cellDateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(dayNum).padStart(2, '0')}`;
             const cellDate = new Date(year, month, dayNum);
@@ -1352,18 +1454,103 @@ const secondaryAuth = getAuth(secondaryApp);
                 }
             });
             
-            const filteredApprovedLeaves = leaveRequests.filter(req => {
-                if (req.status !== "Approved") return false;
-                const emp = usersMap[req.userId];
-                if (!emp) return false;
-                if (adminProfile.role === 'team_lead') {
-                    const isReportingManager = emp.reportingManager === adminProfile.id;
-                    const isSameDepartment = emp.department === adminProfile.department;
-                    if (!isReportingManager && !isSameDepartment) {
-                        return false;
-                    }
+            filteredApprovedLeaves.forEach(leave => {
+                const start = new Date(leave.startDate);
+                const end = new Date(leave.endDate);
+                cellDate.setHours(0,0,0,0);
+                start.setHours(0,0,0,0);
+                end.setHours(0,0,0,0);
+                
+                if (cellDate >= start && cellDate <= end) {
+                    const emp = usersMap[leave.userId] || { name: "Staff" };
+                    const el = document.createElement('div');
+                    el.className = "calendar-event event-leave";
+                    el.textContent = `${emp.name} (Leave)`;
+                    el.title = `${emp.name}: ${leave.startDate} to ${leave.endDate}`;
+                    eventsContainer.appendChild(el);
                 }
-                return true;
+            });
+            
+            cell.appendChild(eventsContainer);
+            grid.appendChild(cell);
+        }
+    }
+
+    function renderAdminCalendarWeek(grid, monthTitle) {
+        grid.style.display = 'grid';
+        grid.style.gridTemplateColumns = 'repeat(7, 1fr)';
+        grid.style.gap = '8px';
+
+        const dayHeaders = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+        dayHeaders.forEach(day => {
+            const h = document.createElement('div');
+            h.className = "calendar-day-header";
+            h.textContent = day;
+            grid.appendChild(h);
+        });
+
+        const today = new Date();
+        const curr = new Date(adminCalendarCurrentDate);
+        const day = curr.getDay();
+        const startOfWeek = new Date(curr);
+        startOfWeek.setDate(curr.getDate() - day);
+
+        const endOfWeek = new Date(startOfWeek);
+        endOfWeek.setDate(startOfWeek.getDate() + 6);
+
+        const startStr = startOfWeek.toLocaleDateString('en-GB', { month: 'short', day: 'numeric' });
+        const endStr = endOfWeek.toLocaleDateString('en-GB', { month: 'short', day: 'numeric', year: 'numeric' });
+        monthTitle.textContent = `Week of ${startStr} - ${endStr}`;
+
+        const filteredApprovedLeaves = leaveRequests.filter(req => {
+            if (req.status !== "Approved") return false;
+            const emp = usersMap[req.userId];
+            if (!emp) return false;
+            if (adminProfile.role === 'team_lead') {
+                const isReportingManager = emp.reportingManager === adminProfile.id;
+                const isSameDepartment = emp.department === adminProfile.department;
+                if (!isReportingManager && !isSameDepartment) {
+                    return false;
+                }
+            }
+            return true;
+        });
+
+        for (let i = 0; i < 7; i++) {
+            const cellDate = new Date(startOfWeek);
+            cellDate.setDate(startOfWeek.getDate() + i);
+
+            const y = cellDate.getFullYear();
+            const m = cellDate.getMonth();
+            const d = cellDate.getDate();
+
+            const cellDateStr = `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+
+            const cell = document.createElement('div');
+            cell.className = "calendar-day";
+            cell.style.minHeight = "120px";
+            
+            if (y === today.getFullYear() && m === today.getMonth() && d === today.getDate()) {
+                cell.classList.add('today');
+            }
+            
+            const numSpan = document.createElement('span');
+            numSpan.className = "calendar-day-num";
+            numSpan.textContent = d;
+            cell.appendChild(numSpan);
+            
+            const eventsContainer = document.createElement('div');
+            eventsContainer.className = "calendar-events-container";
+            eventsContainer.style.maxHeight = "90px";
+            
+            calendarEventsList.forEach(evt => {
+                if (evt.date === cellDateStr) {
+                    const el = document.createElement('div');
+                    el.className = `calendar-event event-${evt.type}`;
+                    el.textContent = evt.title;
+                    el.title = `${evt.title} (${evt.type.replace('_', ' ')})`;
+                    eventsContainer.appendChild(el);
+                }
             });
             
             filteredApprovedLeaves.forEach(leave => {
@@ -1387,19 +1574,170 @@ const secondaryAuth = getAuth(secondaryApp);
             grid.appendChild(cell);
         }
     }
+
+    function renderAdminCalendarYear(grid, monthTitle) {
+        const year = adminCalendarCurrentDate.getFullYear();
+        monthTitle.textContent = `Year ${year}`;
+        
+        grid.style.display = 'grid';
+        grid.style.gridTemplateColumns = 'repeat(auto-fit, minmax(210px, 1fr))';
+        grid.style.gap = '20px';
+
+        const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        const today = new Date();
+
+        const filteredApprovedLeaves = leaveRequests.filter(req => {
+            if (req.status !== "Approved") return false;
+            const emp = usersMap[req.userId];
+            if (!emp) return false;
+            if (adminProfile.role === 'team_lead') {
+                const isReportingManager = emp.reportingManager === adminProfile.id;
+                const isSameDepartment = emp.department === adminProfile.department;
+                if (!isReportingManager && !isSameDepartment) {
+                    return false;
+                }
+            }
+            return true;
+        });
+
+        for (let m = 0; m < 12; m++) {
+            const card = document.createElement('div');
+            card.className = "mini-month-card";
+            card.style.cssText = "border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 12px; background: white; display: flex; flex-direction: column; gap: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.02);";
+
+            const title = document.createElement('h4');
+            title.textContent = monthNames[m];
+            title.style.cssText = "font-size: 0.85rem; font-weight: 700; color: #1E293B; margin: 0; text-align: center; border-bottom: 1px solid var(--border-color); padding-bottom: 4px;";
+            card.appendChild(title);
+
+            const miniGrid = document.createElement('div');
+            miniGrid.className = "mini-month-grid";
+            miniGrid.style.cssText = "display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px;";
+
+            const dayHeaders = ["S", "M", "T", "W", "T", "F", "S"];
+            dayHeaders.forEach(dh => {
+                const headerCell = document.createElement('div');
+                headerCell.textContent = dh;
+                headerCell.style.cssText = "font-size: 0.6rem; font-weight: 700; color: #94A3B8; text-align: center; padding: 2px 0;";
+                miniGrid.appendChild(headerCell);
+            });
+
+            const firstDay = new Date(year, m, 1).getDay();
+            const totalDays = new Date(year, m + 1, 0).getDate();
+
+            for (let i = 0; i < firstDay; i++) {
+                const empty = document.createElement('div');
+                miniGrid.appendChild(empty);
+            }
+
+            for (let d = 1; d <= totalDays; d++) {
+                const cellDate = new Date(year, m, d);
+                const cellDateStr = `${year}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+
+                const dayCell = document.createElement('div');
+                dayCell.textContent = d;
+                dayCell.style.cssText = "font-size: 0.65rem; font-weight: 600; color: #475569; text-align: center; padding: 3px 0; border-radius: 4px; display: flex; align-items: center; justify-content: center; aspect-ratio: 1; cursor: pointer;";
+
+                if (year === today.getFullYear() && m === today.getMonth() && d === today.getDate()) {
+                    dayCell.style.border = "1.5px solid #4F46E5";
+                    dayCell.style.color = "#4F46E5";
+                }
+
+                let eventType = null;
+                let eventTitle = "";
+                calendarEventsList.forEach(evt => {
+                    if (evt.date === cellDateStr) {
+                        eventType = evt.type;
+                        eventTitle = evt.title;
+                    }
+                });
+
+                filteredApprovedLeaves.forEach(leave => {
+                    const start = new Date(leave.startDate);
+                    const end = new Date(leave.endDate);
+                    cellDate.setHours(0,0,0,0);
+                    start.setHours(0,0,0,0);
+                    end.setHours(0,0,0,0);
+                    
+                    if (cellDate >= start && cellDate <= end) {
+                        const emp = usersMap[leave.userId] || { name: "Staff" };
+                        eventType = "leave";
+                        eventTitle = `${emp.name} (Leave)`;
+                    }
+                });
+
+                if (eventType) {
+                    dayCell.title = eventTitle;
+                    if (eventType === 'public_holiday') {
+                        dayCell.style.background = "#E0F2FE";
+                        dayCell.style.color = "#0369A1";
+                    } else if (eventType === 'festival_holiday') {
+                        dayCell.style.background = "#F3E8FF";
+                        dayCell.style.color = "#6B21A8";
+                    } else if (eventType === 'company_holiday') {
+                        dayCell.style.background = "#E0E7FF";
+                        dayCell.style.color = "#3730A3";
+                    } else if (eventType === 'leave') {
+                        dayCell.style.background = "#D1FAE5";
+                        dayCell.style.color = "#065F46";
+                    } else if (eventType === 'team_event') {
+                        dayCell.style.background = "#FEF3C7";
+                        dayCell.style.color = "#92400E";
+                    } else if (eventType === 'important_date') {
+                        dayCell.style.background = "#FFE4E6";
+                        dayCell.style.color = "#9F1239";
+                    }
+                }
+
+                miniGrid.appendChild(dayCell);
+            }
+
+            card.appendChild(miniGrid);
+            grid.appendChild(card);
+        }
+    }
     
     const btnAdminPrevMonth = document.getElementById('btnAdminPrevMonth');
     const btnAdminNextMonth = document.getElementById('btnAdminNextMonth');
     if (btnAdminPrevMonth) {
         btnAdminPrevMonth.addEventListener('click', () => {
-            adminCalendarCurrentDate.setMonth(adminCalendarCurrentDate.getMonth() - 1);
+            if (adminCalendarViewMode === 'week') {
+                adminCalendarCurrentDate.setDate(adminCalendarCurrentDate.getDate() - 7);
+            } else if (adminCalendarViewMode === 'year') {
+                adminCalendarCurrentDate.setFullYear(adminCalendarCurrentDate.getFullYear() - 1);
+            } else {
+                adminCalendarCurrentDate.setMonth(adminCalendarCurrentDate.getMonth() - 1);
+            }
             renderAdminCalendar();
         });
     }
     if (btnAdminNextMonth) {
         btnAdminNextMonth.addEventListener('click', () => {
-            adminCalendarCurrentDate.setMonth(adminCalendarCurrentDate.getMonth() + 1);
+            if (adminCalendarViewMode === 'week') {
+                adminCalendarCurrentDate.setDate(adminCalendarCurrentDate.getDate() + 7);
+            } else if (adminCalendarViewMode === 'year') {
+                adminCalendarCurrentDate.setFullYear(adminCalendarCurrentDate.getFullYear() + 1);
+            } else {
+                adminCalendarCurrentDate.setMonth(adminCalendarCurrentDate.getMonth() + 1);
+            }
             renderAdminCalendar();
+        });
+    }
+
+    const adminCalViewSwitcher = document.getElementById('adminCalendarViewSwitcher');
+    if (adminCalViewSwitcher) {
+        const btns = adminCalViewSwitcher.querySelectorAll('button');
+        btns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                btns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                if (btn.id === 'btnAdminCalendarViewMonth') adminCalendarViewMode = 'month';
+                if (btn.id === 'btnAdminCalendarViewWeek') adminCalendarViewMode = 'week';
+                if (btn.id === 'btnAdminCalendarViewYear') adminCalendarViewMode = 'year';
+                
+                renderAdminCalendar();
+            });
         });
     }
 

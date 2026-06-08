@@ -194,6 +194,45 @@
                     </div>
                 </div>
 
+                <!-- Detailed Attendance Statistics Grid -->
+                <div class="stats-grid-admin" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px; margin-bottom: 32px;">
+                    <div class="admin-stat-card" style="padding: 16px; gap: 16px;">
+                        <div class="admin-stat-icon bg-indigo" style="width: 44px; height: 44px;"><i data-feather="activity" style="width: 18px; height: 18px;"></i></div>
+                        <div class="admin-stat-info">
+                            <h3 style="font-size: 0.75rem; margin-bottom: 2px;">Total Working Hours</h3>
+                            <p id="adminStatWorkingHours" style="font-size: 1.2rem; font-weight: 700; color: #1E293B;">0h 0m</p>
+                        </div>
+                    </div>
+                    <div class="admin-stat-card" style="padding: 16px; gap: 16px;">
+                        <div class="admin-stat-icon bg-amber" style="width: 44px; height: 44px;"><i data-feather="alert-circle" style="width: 18px; height: 18px;"></i></div>
+                        <div class="admin-stat-info">
+                            <h3 style="font-size: 0.75rem; margin-bottom: 2px;">Late Clock In</h3>
+                            <p id="adminStatLateIn" style="font-size: 1.2rem; font-weight: 700; color: #1E293B;">0</p>
+                        </div>
+                    </div>
+                    <div class="admin-stat-card" style="padding: 16px; gap: 16px;">
+                        <div class="admin-stat-icon bg-indigo" style="width: 44px; height: 44px;"><i data-feather="arrow-right-circle" style="width: 18px; height: 18px;"></i></div>
+                        <div class="admin-stat-info">
+                            <h3 style="font-size: 0.75rem; margin-bottom: 2px;">Early Clock In</h3>
+                            <p id="adminStatEarlyIn" style="font-size: 1.2rem; font-weight: 700; color: #1E293B;">0</p>
+                        </div>
+                    </div>
+                    <div class="admin-stat-card" style="padding: 16px; gap: 16px;">
+                        <div class="admin-stat-icon bg-rose" style="width: 44px; height: 44px;"><i data-feather="arrow-left-circle" style="width: 18px; height: 18px;"></i></div>
+                        <div class="admin-stat-info">
+                            <h3 style="font-size: 0.75rem; margin-bottom: 2px;">Early Clock Out</h3>
+                            <p id="adminStatEarlyOut" style="font-size: 1.2rem; font-weight: 700; color: #1E293B;">0</p>
+                        </div>
+                    </div>
+                    <div class="admin-stat-card" style="padding: 16px; gap: 16px;">
+                        <div class="admin-stat-icon bg-indigo" style="width: 44px; height: 44px;"><i data-feather="clock" style="width: 18px; height: 18px;"></i></div>
+                        <div class="admin-stat-info">
+                            <h3 style="font-size: 0.75rem; margin-bottom: 2px;">Late Clock Out</h3>
+                            <p id="adminStatLateOut" style="font-size: 1.2rem; font-weight: 700; color: #1E293B;">0</p>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Global Attendance Tracking Table -->
                 <div class="card">
                     <div class="card-header border-bottom">
@@ -323,7 +362,7 @@
             <div id="view-admin-notices" class="view-section" style="display: none;">
                 <div class="profile-grid">
                     <!-- Left: Create Notice Card -->
-                    <div class="card settings-card">
+                    <div class="card settings-card" id="adminCreateNoticeCard">
                         <div class="card-header border-bottom">
                             <h2 class="card-title">Create Notice / Announcement</h2>
                         </div>
@@ -391,10 +430,17 @@
                     <div class="card" style="flex: 1.5;">
                         <div class="card-body">
                             <div class="calendar-wrapper">
-                                <div class="calendar-header-row">
-                                    <button class="calendar-nav-btn" id="btnAdminPrevMonth"><i data-feather="chevron-left" style="width:14px; height:14px;"></i> Previous</button>
-                                    <h2 class="calendar-month-title" id="adminCalendarMonthTitle">June 2026</h2>
-                                    <button class="calendar-nav-btn" id="btnAdminNextMonth">Next <i data-feather="chevron-right" style="width:14px; height:14px;"></i></button>
+                                <div class="calendar-header-row" style="display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap;">
+                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                        <button class="calendar-nav-btn" id="btnAdminPrevMonth"><i data-feather="chevron-left" style="width:14px; height:14px;"></i> Previous</button>
+                                        <h2 class="calendar-month-title" id="adminCalendarMonthTitle" style="min-width: 140px; text-align: center;">June 2026</h2>
+                                        <button class="calendar-nav-btn" id="btnAdminNextMonth">Next <i data-feather="chevron-right" style="width:14px; height:14px;"></i></button>
+                                    </div>
+                                    <div class="id-card-switcher" id="adminCalendarViewSwitcher" style="margin-left: auto;">
+                                        <button type="button" class="switcher-btn active" id="btnAdminCalendarViewMonth">Month</button>
+                                        <button type="button" class="switcher-btn" id="btnAdminCalendarViewWeek">Week</button>
+                                        <button type="button" class="switcher-btn" id="btnAdminCalendarViewYear">Year</button>
+                                    </div>
                                 </div>
                                 <div class="calendar-grid" id="adminCalendarGrid">
                                     <!-- Populated dynamically by JS -->
@@ -404,7 +450,7 @@
                     </div>
 
                     <!-- Right: Manage events card -->
-                    <div class="card settings-card" style="flex: 1;">
+                    <div class="card settings-card" id="adminCreateEventCard" style="flex: 1;">
                         <div class="card-header border-bottom">
                             <h2 class="card-title">Configure Company Calendar</h2>
                         </div>
@@ -740,26 +786,32 @@
                         <div class="form-row three-col">
                             <div class="form-group">
                                 <label>Role</label>
-                                <select id="editEmpRole" class="form-control">
-                                    <option value="employee">Employee</option>
-                                    <option value="team_lead">Team Lead / Dept Admin</option>
-                                    <option value="hr_admin">HR Admin</option>
-                                    <option value="super_admin">Super Admin</option>
-                                </select>
+                                <div class="select-wrapper">
+                                    <select id="editEmpRole" class="form-control">
+                                        <option value="employee">Employee</option>
+                                        <option value="team_lead">Team Lead</option>
+                                        <option value="hr_admin">HR Admin</option>
+                                        <option value="super_admin">Super Admin</option>
+                                    </select>
+                                </div>
                             </div>
 
                             <div class="form-group">
                                 <label>Department</label>
-                                <select id="editEmpDept" class="form-control">
-                                    <option value="">Select Department</option>
-                                </select>
+                                <div class="select-wrapper">
+                                    <select id="editEmpDept" class="form-control">
+                                        <option value="">Select Department</option>
+                                    </select>
+                                </div>
                             </div>
 
                             <div class="form-group">
                                 <label>Reporting Manager</label>
-                                <select id="editEmpManager" class="form-control">
-                                    <option value="">Select Manager</option>
-                                </select>
+                                <div class="select-wrapper">
+                                    <select id="editEmpManager" class="form-control">
+                                        <option value="">Select Manager</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
 
@@ -833,26 +885,32 @@
                         <div class="form-row three-col">
                             <div class="form-group">
                                 <label>Role</label>
-                                <select id="addEmpRole" class="form-control">
-                                    <option value="employee" selected>Employee</option>
-                                    <option value="team_lead">Team Lead / Dept Admin</option>
-                                    <option value="hr_admin">HR Admin</option>
-                                    <option value="super_admin">Super Admin</option>
-                                </select>
+                                <div class="select-wrapper">
+                                    <select id="addEmpRole" class="form-control">
+                                        <option value="employee" selected>Employee</option>
+                                        <option value="team_lead">Team Lead</option>
+                                        <option value="hr_admin">HR Admin</option>
+                                        <option value="super_admin">Super Admin</option>
+                                    </select>
+                                </div>
                             </div>
 
                             <div class="form-group">
                                 <label>Department</label>
-                                <select id="addEmpDept" class="form-control" required>
-                                    <option value="">Select Department</option>
-                                </select>
+                                <div class="select-wrapper">
+                                    <select id="addEmpDept" class="form-control" required>
+                                        <option value="">Select Department</option>
+                                    </select>
+                                </div>
                             </div>
 
                             <div class="form-group">
                                 <label>Reporting Manager</label>
-                                <select id="addEmpManager" class="form-control">
-                                    <option value="">Select Manager</option>
-                                </select>
+                                <div class="select-wrapper">
+                                    <select id="addEmpManager" class="form-control">
+                                        <option value="">Select Manager</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
 
