@@ -747,6 +747,13 @@ const secondaryAuth = getAuth(secondaryApp);
             const department = document.getElementById('editEmpDept').value;
             const reportingManager = document.getElementById('editEmpManager').value;
 
+            // Check for duplicate employee ID
+            const isDuplicate = Object.values(usersMap).some(user => user.id !== empId && user.employeeId && user.employeeId.trim().toLowerCase() === employeeId.trim().toLowerCase());
+            if (isDuplicate) {
+                alert(`Duplicate Error: The Employee ID '${employeeId}' is already assigned to another employee.`);
+                return;
+            }
+
             try {
                 await updateDoc(doc(db, "users", empId), {
                     name: name,
@@ -770,6 +777,19 @@ const secondaryAuth = getAuth(secondaryApp);
 
     // --- ADD EMPLOYEE CREATION IMPLEMENTATION ---
 
+    function generateNextEmployeeId() {
+        let maxId = 999;
+        Object.values(usersMap).forEach(user => {
+            if (user.employeeId && user.employeeId.startsWith('HM-')) {
+                const numPart = parseInt(user.employeeId.substring(3));
+                if (!isNaN(numPart) && numPart > maxId) {
+                    maxId = numPart;
+                }
+            }
+        });
+        return 'HM-' + (maxId + 1);
+    }
+
     function openAddEmployeeModal() {
         const deptSelect = document.getElementById('addEmpDept');
         deptSelect.innerHTML = `<option value="">Select Department</option>`;
@@ -788,8 +808,8 @@ const secondaryAuth = getAuth(secondaryApp);
         // Set default temporary password
         document.getElementById('addEmpPassword').value = 'Homesly@2026';
         
-        // Generate random employee ID
-        document.getElementById('addEmpNumber').value = 'HM-' + Math.floor(1000 + Math.random() * 9000);
+        // Generate sequential employee ID
+        document.getElementById('addEmpNumber').value = generateNextEmployeeId();
 
         document.getElementById('addEmployeeModal').style.display = 'flex';
     }
@@ -817,6 +837,13 @@ const secondaryAuth = getAuth(secondaryApp);
             const role = document.getElementById('addEmpRole').value;
             const department = document.getElementById('addEmpDept').value;
             const reportingManager = document.getElementById('addEmpManager').value;
+
+            // Check for duplicate employee ID
+            const isDuplicate = Object.values(usersMap).some(user => user.employeeId && user.employeeId.trim().toLowerCase() === employeeId.trim().toLowerCase());
+            if (isDuplicate) {
+                alert(`Duplicate Error: The Employee ID '${employeeId}' is already assigned to another employee.`);
+                return;
+            }
 
             submitBtn.disabled = true;
             submitBtn.textContent = 'Creating Account...';
@@ -2084,6 +2111,3 @@ const secondaryAuth = getAuth(secondaryApp);
         if (idCardSignature) idCardSignature.textContent = adminProfile.name || 'Admin Signature';
         if (idCardBloodGroup) idCardBloodGroup.textContent = adminProfile.bloodGroup || '-';
     }
-
-    // Duplicate mobile menu responsiveness and DOMContentLoaded closing brace removed
-}
