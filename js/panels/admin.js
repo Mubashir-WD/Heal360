@@ -562,14 +562,12 @@ const secondaryAuth = getAuth(secondaryApp);
 
             let actionsHTML = "";
             if (adminProfile.role === 'super_admin' || adminProfile.role === 'hr_admin' || adminProfile.role === 'hr') {
-                const statusBtnText = emp.status === 'disabled' ? 'Enable' : 'Disable';
-                const statusBtnClass = emp.status === 'disabled' ? 'btn-success' : 'btn-danger';
                 actionsHTML = `
                     <div style="display: flex; gap: 6px; align-items: center;">
                         <button class="btn btn-secondary btn-sm btn-view-id-emp" data-id="${emp.id}" title="View Digital ID Card"><i data-feather="credit-card" style="width:12px;"></i> ID Card</button>
                         <button class="btn btn-secondary btn-sm btn-edit-emp" data-id="${emp.id}"><i data-feather="edit-2" style="width:12px;"></i> Edit</button>
                         <button class="btn btn-secondary btn-sm btn-reset-pw-emp" data-id="${emp.id}" data-email="${emp.email}" title="Send Password Reset Email"><i data-feather="key" style="width:12px;"></i> Reset PW</button>
-                        <button class="btn btn-sm btn-toggle-status-emp ${statusBtnClass}" data-id="${emp.id}" data-status="${emp.status || 'active'}" style="padding: 6px 12px; font-size: 0.8rem;">${statusBtnText}</button>
+                        <button class="btn btn-sm btn-danger btn-delete-emp" data-id="${emp.id}" style="padding: 6px 12px; font-size: 0.8rem;"><i data-feather="trash" style="width:12px;"></i> Delete</button>
                     </div>
                 `;
             } else {
@@ -634,21 +632,21 @@ const secondaryAuth = getAuth(secondaryApp);
             });
         });
 
-        // Bind Toggle Status clicks
-        const toggleStatusBtns = document.querySelectorAll('.btn-toggle-status-emp');
-        toggleStatusBtns.forEach(btn => {
+        // Bind Delete clicks
+        const deleteEmpBtns = document.querySelectorAll('.btn-delete-emp');
+        deleteEmpBtns.forEach(btn => {
             btn.addEventListener('click', async (e) => {
                 const empId = e.currentTarget.getAttribute('data-id');
-                const currentStatus = e.currentTarget.getAttribute('data-status');
-                const nextStatus = currentStatus === 'disabled' ? 'active' : 'disabled';
+                const emp = usersMap[empId];
+                const empName = emp ? emp.name : "this employee";
                 
-                if (confirm(`Are you sure you want to ${nextStatus === 'disabled' ? 'disable' : 'enable'} this employee account?`)) {
+                if (confirm(`WARNING: Are you sure you want to permanently delete the profile of ${empName}? This action cannot be undone.`)) {
                     try {
-                        await updateDoc(doc(db, "users", empId), { status: nextStatus });
-                        console.log(`Employee status toggled to: ${nextStatus}`);
+                        await deleteDoc(doc(db, "users", empId));
+                        console.log(`Employee profile ${empId} deleted from database.`);
                     } catch (err) {
-                        console.error("Toggle status error:", err);
-                        alert("Database update failed: " + err.message);
+                        console.error("Delete employee error:", err);
+                        alert("Database deletion failed: " + err.message);
                     }
                 }
             });
@@ -778,7 +776,7 @@ const secondaryAuth = getAuth(secondaryApp);
     // --- ADD EMPLOYEE CREATION IMPLEMENTATION ---
 
     function generateNextEmployeeId() {
-        let maxId = 999;
+        let maxId = 0;
         Object.values(usersMap).forEach(user => {
             if (user.employeeId && user.employeeId.startsWith('HM-')) {
                 const numPart = parseInt(user.employeeId.substring(3));
@@ -787,7 +785,7 @@ const secondaryAuth = getAuth(secondaryApp);
                 }
             }
         });
-        return 'HM-' + (maxId + 1);
+        return 'HM-' + String(maxId + 1).padStart(3, '0');
     }
 
     function openAddEmployeeModal() {

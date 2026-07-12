@@ -197,26 +197,10 @@ import {
                         needsUpdate = true;
                     }
                 } else {
-                    appState.profile = {
-                        name: 'New Employee',
-                        email: auth.currentUser?.email || '',
-                        phone: '',
-                        dob: '',
-                        gender: 'other',
-                        designation: 'Staff',
-                        department: '',
-                        employeeId: 'HM-' + Math.floor(1000 + Math.random() * 9000),
-                        status: 'active',
-                        avatar: 'https://ui-avatars.com/api/?name=Employee&background=4F46E5&color=fff',
-                        role: 'employee',
-                        emergencyContact: '',
-                        joinDate: new Date().toLocaleDateString('en-CA'),
-                        expiryDate: new Date(new Date().setFullYear(new Date().getFullYear() + 5)).toLocaleDateString('en-CA'),
-                        bloodGroup: '',
-                        leaveBalance: { annual: 15, sick: 4, festival: 3 }
-                    };
-                    setDoc(userRef, appState.profile).catch(err => {
-                        console.error("Error setting new profile:", err);
+                    console.log("[Auth] Profile not found in database. Access Denied.");
+                    alert("Your profile was not found in the HR database. Please contact your administrator.");
+                    signOut(auth).then(() => {
+                        window.location.replace("login.html");
                     });
                 }
 
